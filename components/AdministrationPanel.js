@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
+import Link from "../src/Link";
+
 const styleModal = {
   position: "absolute",
   top: "50%",
@@ -39,17 +41,21 @@ export default function AdministrationPanel(props) {
             style={{ marginTop: "15px" }}
           >
             <Grid item>
-              <Button variant="contained" onClick={() => alert("utilisateur")}>
-                <Typography id="admin-utilisateur-button" variant="button">
-                  Gérer les utilisateurs
-                </Typography>
+              <Button variant="contained">
+                <Link href="/utilisateur">
+                  <Typography id="admin-utilisateur-button" variant="button">
+                    Gérer les utilisateurs
+                  </Typography>
+                </Link>
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" onClick={() => alert("machine")}>
-                <Typography id="admin-machine-button" variant="button">
-                  Gérer les machines
-                </Typography>
+              <Button variant="contained">
+                <Link href="/ordinateur">
+                  <Typography id="admin-machine-button" variant="button">
+                    Gérer les ordinateurs
+                  </Typography>
+                </Link>
               </Button>
             </Grid>
           </Grid>

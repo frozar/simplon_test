@@ -75,7 +75,7 @@ export default function Home() {
       </Button>
       <Grid container justifyContent="center">
         <Grid item>
-          <h1>RéservAli</h1>
+          <Typography variant="h1">RéservAli</Typography>
         </Grid>
       </Grid>
       <Timeline

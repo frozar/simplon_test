@@ -29,6 +29,14 @@ const theme = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#FFF",
+          textDecoration: "none",
+        },
+      },
+    },
   },
 });
 
