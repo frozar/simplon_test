@@ -14,6 +14,9 @@ import {
   SortGridMenuItems,
   GridOverlay,
 } from "@mui/x-data-grid";
+import Snackbar from "@mui/material/Snackbar";
+import Slide from "@mui/material/Slide";
+import MuiAlert from "@mui/material/Alert";
 
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -79,6 +82,14 @@ function CustomNoRowsOverlay() {
   );
 }
 
+function SlideTransition(props) {
+  return <Slide {...props} direction="down" />;
+}
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function Utilisateur() {
   const theme = useTheme();
 
@@ -86,6 +97,7 @@ export default function Utilisateur() {
   const [selectionToDelete, setSelectionToDelete] = React.useState([]);
   const [rows, setRows] = React.useState(defaultRows);
   const [openCreateUser, setOpenCreateUser] = React.useState(false);
+  const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
   const handleOpenCreateUser = () => setOpenCreateUser(true);
   const handleCloseCreateUser = () => setOpenCreateUser(false);
@@ -97,8 +109,17 @@ export default function Utilisateur() {
     setRows(filtedRows);
   };
 
+  const showSnackBar = () => {
+    setOpenSnackBar(true);
+  };
+
+  const hideSnackBar = () => {
+    setOpenSnackBar(false);
+  };
+
   const handleEdit = (params) => {
     console.log(params);
+    showSnackBar();
   };
 
   const newUser = (values) => {
@@ -115,6 +136,7 @@ export default function Utilisateur() {
         newId += 1;
       }
       setRows([...rows, { id: newId, nom: values.nom, prenom: values.prenom }]);
+      showSnackBar();
       return SUCCESS;
     }
   };
@@ -244,6 +266,17 @@ export default function Utilisateur() {
         handleClose={handleCloseCreateUser}
         newUser={newUser}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openSnackBar}
+        onClose={hideSnackBar}
+        TransitionComponent={SlideTransition}
+        autoHideDuration={3000}
+      >
+        <Alert onClose={hideSnackBar} severity="success" sx={{ width: "100%" }}>
+          Nouvel utilisateur ajouté
+        </Alert>
+      </Snackbar>
     </>
   );
 }
