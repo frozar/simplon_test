@@ -7,6 +7,7 @@ specifiers:
   '@emotion/styled': ^11.3.0
   '@mui/icons-material': ^5.0.5
   '@mui/material': ^5.0.6
+  '@mui/x-data-grid': ^5.0.0-beta.7
   eslint: 7.32.0
   eslint-config-next: 12.0.3
   interactjs: ^1.10.11
@@ -24,6 +25,7 @@ dependencies:
   '@emotion/styled': 11.3.0_f400783037ccf00f9cadfddbfc36c9d5
   '@mui/icons-material': 5.0.5_@mui+material@5.0.6+react@17.0.2
   '@mui/material': 5.0.6_a0e5aa09008c2d42a228aa7968c12559
+  '@mui/x-data-grid': 5.0.0-beta.7_@mui+material@5.0.6+react@17.0.2
   interactjs: 1.10.11
   moment: 2.29.1
   next: 12.0.3_react-dom@17.0.2+react@17.0.2
@@ -453,6 +455,21 @@ packages:
       prop-types: 15.7.2
       react: 17.0.2
       react-is: 17.0.2
+    dev: false
+
+  /@mui/x-data-grid/5.0.0-beta.7_@mui+material@5.0.6+react@17.0.2:
+    resolution: {integrity: sha512-0h7uJ/1xvXghJwGPRFcPUPB0zNlKpfAqFU2dBdAtUl6DK2ca1cPfd+sLNzApa4yvxjGUxLyNxvcc5xutka0t8A==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@mui/material': ^5.0.6
+      react: ^17.0.2
+    dependencies:
+      '@mui/material': 5.0.6_a0e5aa09008c2d42a228aa7968c12559
+      '@mui/utils': 5.0.1_react@17.0.2
+      clsx: 1.1.1
+      prop-types: 15.7.2
+      react: 17.0.2
+      reselect: 4.1.2
     dev: false
 
   /@napi-rs/triples/1.0.3:
@@ -2992,6 +3009,10 @@ packages:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /reselect/4.1.2:
+    resolution: {integrity: sha512-wg60ebcPOtxcptIUfrr7Jt3h4BR86cCW3R7y4qt65lnNb4yz4QgrXcbSioVsIOYguyz42+XTHIyJ5TEruzkFgQ==}
+    dev: false
 
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}

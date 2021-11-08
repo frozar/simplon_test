@@ -1,21 +1,116 @@
 import React from "react";
 import Head from "next/head";
+import { styled, useTheme } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+
+// import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
+// import {
+//   GridColumnMenu,
+//   GridColumnMenuContainer,
+//   GridFilterMenuItem,
+//   SortGridMenuItems,
+//   useGridApiRef,
+//   DataGridPro,
+// } from "@mui/x-data-grid-pro";
+
+import {
+  DataGrid,
+  GridColumnMenu,
+  GridColumnMenuContainer,
+  GridFilterMenuItem,
+  SortGridMenuItems,
+  GridOverlay,
+} from "@mui/x-data-grid";
+
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import Link from "../src/Link";
 
-const styleAccueilButton = {
-  position: "absolute",
-  top: "0",
-  left: "0",
-  marginTop: "5px",
-  marginLeft: "14px",
-};
+const CustomizedPaper = styled(Paper)(
+  ({ theme }) => `
+    width: 100%;
+    margin: ${theme.spacing(2)};
+    padding: ${theme.spacing(2)};
+    box-shadow: ${theme.shadows[10]};
+  `
+);
+
+const defaultRows = [
+  { id: 1, nom: "Wissart", prenom: "Lolita" },
+  { id: 2, nom: "Deniset", prenom: "Armand" },
+  { id: 3, nom: "Rozar", prenom: "Fabien" },
+];
+
+const columns = [
+  {
+    id: 1,
+    field: "nom",
+    headerName: "Nom",
+    width: 150,
+    hide: false,
+    hideSortIcons: true,
+  },
+  { id: 2, field: "prenom", headerName: "Prénom", width: 150 },
+];
+
+function CustomColumnMenuComponent(props) {
+  // const classes = useStyles();
+  const { hideMenu, currentColumn, color, ...other } = props;
+  const possibleColumnNames = ["nom", "prenom"];
+
+  if (possibleColumnNames.includes(currentColumn.field)) {
+    return (
+      <GridColumnMenuContainer
+        hideMenu={hideMenu}
+        currentColumn={currentColumn}
+        {...other}
+      >
+        <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
+        <GridFilterMenuItem onClick={hideMenu} column={currentColumn} />
+      </GridColumnMenuContainer>
+    );
+  }
+
+  return (
+    <GridColumnMenu
+      hideMenu={hideMenu}
+      currentColumn={currentColumn}
+      {...other}
+    />
+  );
+}
+
+function CustomNoRowsOverlay() {
+  const theme = useTheme();
+  return (
+    <GridOverlay
+      style={{
+        background: theme.palette.grey[200],
+      }}
+    >
+      <Typography variant="caption">Pas d&apos;utilisateurs</Typography>
+    </GridOverlay>
+  );
+}
 
 export default function Utilisateur() {
+  const theme = useTheme();
+
+  const [deleteDisable, setDeleteDisable] = React.useState(true);
+  const [selectionModel, setSelectionModel] = React.useState([]);
+  const [rows, setRows] = React.useState(defaultRows);
+
+  const handleDelete = () => {
+    const filtedRows = rows.filter((item) => !selectionModel.includes(item.id));
+    setRows(filtedRows);
+  };
+
   return (
     <>
       <Head>
@@ -27,18 +122,83 @@ export default function Utilisateur() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Button
-        variant="contained"
-        color="secondary"
-        startIcon={<ArrowBackIosIcon fontSize="large" />}
-        sx={styleAccueilButton}
+      <Grid
+        container
+        item
+        style={{
+          width: "100%",
+        }}
       >
-        <Link href="/">Accueil</Link>
-      </Button>
-      <Grid container justifyContent="center">
-        <Grid item>
-          <Typography variant="h1">Hello utilisateur</Typography>
-        </Grid>
+        <CustomizedPaper>
+          <Grid
+            container
+            justifyContent="space-between"
+            alignItems="center"
+            style={{ marginBottom: theme.spacing(2) }}
+          >
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<ArrowBackIosIcon fontSize="large" />}
+              >
+                <Link href="/">Accueil</Link>
+              </Button>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6" component="h2" color="primary">
+                Utilisateurs
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<PersonAddIcon />}
+              >
+                Nouvel utilisateur
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            justifyContent="flex-start"
+            style={{ marginBottom: theme.spacing(1) }}
+          >
+            <IconButton
+              aria-label="delete"
+              disabled={deleteDisable}
+              onClick={handleDelete}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+          <div
+            style={{
+              height: "60vh",
+            }}
+          >
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              checkboxSelection
+              onSelectionModelChange={(newSelectionModel) => {
+                // console.log("newSelectionModel", newSelectionModel);
+                if (newSelectionModel.length === 0 && !deleteDisable) {
+                  setDeleteDisable(true);
+                } else if (newSelectionModel.length !== 0 && deleteDisable) {
+                  setDeleteDisable(false);
+                }
+                setSelectionModel(newSelectionModel);
+              }}
+              selectionModel={selectionModel}
+              components={{
+                ColumnMenu: CustomColumnMenuComponent,
+                NoRowsOverlay: CustomNoRowsOverlay,
+              }}
+            />
+          </div>
+        </CustomizedPaper>
       </Grid>
     </>
   );
