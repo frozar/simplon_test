@@ -25,6 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import Link from "../src/Link";
 import CreateUser from "../components/CreateUser";
+import EditUser from "../components/EditUser";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 
 const CustomizedPaper = styled(Paper)(
@@ -94,22 +95,32 @@ export default function Utilisateur() {
   const theme = useTheme();
 
   const [deleteDisable, setDeleteDisable] = React.useState(true);
-  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
   const [rows, setRows] = React.useState(defaultRows);
   const [openCreateUser, setOpenCreateUser] = React.useState(false);
+  const [openEditUser, setOpenEditUser] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
+
+  const selectionToDelete = React.useRef([]);
+  const userToEdit = React.useRef(null);
+  const notificationMessage = React.useRef("");
 
   const handleOpenCreateUser = () => setOpenCreateUser(true);
   const handleCloseCreateUser = () => setOpenCreateUser(false);
 
+  const handleOpenEditUser = () => setOpenEditUser(true);
+  const handleCloseEditUser = () => setOpenEditUser(false);
+
   const handleDelete = () => {
     const filtedRows = rows.filter(
-      (item) => !selectionToDelete.includes(item.id)
+      (item) => !selectionToDelete.current.includes(item.id)
     );
     setRows(filtedRows);
+    notificationMessage.current = "Utilisateur supprimé";
+    setOpenSnackBar(true);
   };
 
-  const showSnackBar = () => {
+  const showSnackBar = (notificationMessageArg) => {
+    notificationMessage.current = notificationMessageArg;
     setOpenSnackBar(true);
   };
 
@@ -118,8 +129,12 @@ export default function Utilisateur() {
   };
 
   const handleEdit = (params) => {
-    console.log(params);
-    showSnackBar();
+    // console.log(params);
+    const { row: user } = params;
+    // setUserToEdit(user);
+    userToEdit.current = user;
+    handleOpenEditUser();
+    // showSnackBar();
   };
 
   const newUser = (values) => {
@@ -136,7 +151,42 @@ export default function Utilisateur() {
         newId += 1;
       }
       setRows([...rows, { id: newId, nom: values.nom, prenom: values.prenom }]);
-      showSnackBar();
+      showSnackBar("Utilisateur ajouté");
+      return SUCCESS;
+    }
+  };
+
+  const editUser = (values, id) => {
+    const alreadyExist =
+      rows.filter(
+        (item) => item.nom === values.nom && item.prenom === values.prenom
+      ).length !== 0;
+    if (alreadyExist) {
+      return ALREADY_EXIST;
+    } else {
+      // const ids = rows.map((item) => item.id);
+      // let newId = 1;
+      // while (ids.includes(newId)) {
+      //   newId += 1;
+      // }
+      // const filteredRows = rows.filter((item) => item.id !== id);
+      // console.log("id", id);
+      // console.log("filteredRows", filteredRows);
+      // setRows([
+      //   ...filteredRows,
+      //   { id, nom: values.nom, prenom: values.prenom },
+      // ]);
+
+      const mappedRows = rows.map((item) => {
+        if (item.id === id) {
+          return { ...item, nom: values.nom, prenom: values.prenom };
+        } else {
+          return item;
+        }
+      });
+      console.log("mappedRows", mappedRows);
+      setRows(mappedRows);
+      showSnackBar("Utilisateur modifié");
       return SUCCESS;
     }
   };
@@ -250,9 +300,10 @@ export default function Utilisateur() {
                 } else if (newSelectionModel.length !== 0 && deleteDisable) {
                   setDeleteDisable(false);
                 }
-                setSelectionToDelete(newSelectionModel);
+                // setSelectionToDelete(newSelectionModel);
+                selectionToDelete.current = newSelectionModel;
               }}
-              selectionModel={selectionToDelete}
+              selectionModel={selectionToDelete.current}
               components={{
                 ColumnMenu: CustomColumnMenuComponent,
                 NoRowsOverlay: CustomNoRowsOverlay,
@@ -266,6 +317,12 @@ export default function Utilisateur() {
         handleClose={handleCloseCreateUser}
         newUser={newUser}
       />
+      <EditUser
+        openModal={openEditUser}
+        handleClose={handleCloseEditUser}
+        userToEdit={userToEdit.current}
+        editUser={editUser}
+      />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={openSnackBar}
@@ -274,7 +331,7 @@ export default function Utilisateur() {
         autoHideDuration={3000}
       >
         <Alert onClose={hideSnackBar} severity="success" sx={{ width: "100%" }}>
-          Nouvel utilisateur ajouté
+          {notificationMessage.current}
         </Alert>
       </Snackbar>
     </>

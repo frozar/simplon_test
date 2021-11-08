@@ -4,16 +4,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
-// import FormControl from "@material-ui/core/FormControl";
-// import TextField from "@material-ui/core/TextField";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
 
 import { Formik, Form, Field } from "formik";
-// import * as Yup from "yup";
-
-// import { ALREADY_EXIST } from "../src/constant";
 
 const styleModal = {
   position: "absolute",
@@ -26,9 +21,19 @@ const styleModal = {
   p: 2,
 };
 
+function AutofocusTextField(props) {
+  return <TextField {...props} autoFocus />;
+}
+
 export default function FormUser(props) {
-  const { openModal, handleClose, initialValues, validationSchema, onSubmit } =
-    props;
+  const {
+    title,
+    openModal,
+    handleClose,
+    initialValues,
+    validationSchema,
+    onSubmit,
+  } = props;
 
   return (
     <Modal
@@ -41,7 +46,7 @@ export default function FormUser(props) {
         <Grid container justifyContent="center">
           <Grid item>
             <Typography variant="h6" component="h2" color="primary">
-              Créer un utilisateur
+              {title}
             </Typography>
           </Grid>
 
@@ -68,7 +73,7 @@ export default function FormUser(props) {
                           id="nom"
                           label="Nom"
                           type="text"
-                          component={TextField}
+                          component={AutofocusTextField}
                           variant="outlined"
                           required
                           value={formik.values.nom}
@@ -136,6 +141,7 @@ export default function FormUser(props) {
                     style={{ marginTop: "16px" }}
                   >
                     <Button
+                      type="submit"
                       variant="contained"
                       disabled={
                         !(formik.dirty && formik.isValid) || formik.isSubmitting

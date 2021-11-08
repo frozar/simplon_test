@@ -4,11 +4,11 @@ import FormUser from "./FormUser";
 import { ALREADY_EXIST } from "../src/constant";
 
 export default function CreateUser(props) {
-  const { openModal, handleClose, newUser } = props;
+  const { openModal, handleClose, userToEdit, editUser } = props;
 
   const initialValues = {
-    nom: "",
-    prenom: "",
+    nom: userToEdit && userToEdit.nom ? userToEdit.nom : "",
+    prenom: userToEdit && userToEdit.prenom ? userToEdit.prenom : "",
   };
   const validationSchema = Yup.object({
     nom: Yup.string().max(100, "Nom trop grand").required("Nom ?"),
@@ -16,7 +16,7 @@ export default function CreateUser(props) {
   });
 
   const onSubmit = async (values, formik) => {
-    const res = newUser(values);
+    const res = editUser(values, userToEdit.id);
     if (res === ALREADY_EXIST) {
       const errorMessage = "Cet utilisateur existe déjà";
       console.error(errorMessage);
@@ -28,7 +28,7 @@ export default function CreateUser(props) {
 
   return (
     <FormUser
-      title="Créer un utilisateur"
+      title="Editer un utilisateur"
       openModal={openModal}
       handleClose={handleClose}
       initialValues={initialValues}
