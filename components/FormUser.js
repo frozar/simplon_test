@@ -72,7 +72,7 @@ export default function FormUser(props) {
           >
             {(formik) => {
               return (
-                <Form>
+                <Form style={{ width: "100%" }}>
                   <Grid
                     container
                     item
@@ -81,7 +81,7 @@ export default function FormUser(props) {
                     style={{ marginTop: "1px" }}
                   >
                     <Grid item xs={6}>
-                      <FormControl>
+                      <FormControl style={{ width: "100%" }}>
                         <Field
                           name="nom"
                           id="nom"
@@ -108,7 +108,7 @@ export default function FormUser(props) {
                       </FormControl>
                     </Grid>
                     <Grid item xs={6}>
-                      <FormControl>
+                      <FormControl style={{ width: "100%" }}>
                         <Field
                           name="prenom"
                           id="prenom"
