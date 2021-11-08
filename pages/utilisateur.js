@@ -22,6 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import Link from "../src/Link";
 import CreateUser from "../components/CreateUser";
+import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 
 const CustomizedPaper = styled(Paper)(
   ({ theme }) => `
@@ -98,6 +99,24 @@ export default function Utilisateur() {
 
   const handleEdit = (params) => {
     console.log(params);
+  };
+
+  const newUser = (values) => {
+    const alreadyExist =
+      rows.filter(
+        (item) => item.nom === values.nom && item.prenom === values.prenom
+      ).length !== 0;
+    if (alreadyExist) {
+      return ALREADY_EXIST;
+    } else {
+      const ids = rows.map((item) => item.id);
+      let newId = 1;
+      while (ids.includes(newId)) {
+        newId += 1;
+      }
+      setRows([...rows, { id: newId, nom: values.nom, prenom: values.prenom }]);
+      return SUCCESS;
+    }
   };
 
   const columns = [
@@ -223,6 +242,7 @@ export default function Utilisateur() {
       <CreateUser
         openModal={openCreateUser}
         handleClose={handleCloseCreateUser}
+        newUser={newUser}
       />
     </>
   );
