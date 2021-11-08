@@ -17,6 +17,7 @@ import {
 import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
 import MuiAlert from "@mui/material/Alert";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -28,14 +29,22 @@ import CreateUser from "../components/CreateUser";
 import EditUser from "../components/EditUser";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 
-const CustomizedPaper = styled(Paper)(
-  ({ theme }) => `
+const CustomizedPaper = styled(Paper)(({ theme }) => {
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
+
+  let margin = 2;
+  let padding = 2;
+  if (matchesSM) {
+    margin = 0;
+    padding = 1;
+  }
+  return `
     width: 100%;
-    margin: ${theme.spacing(2)};
-    padding: ${theme.spacing(2)};
+    margin: ${theme.spacing(margin)};
+    padding: ${theme.spacing(padding)};
     box-shadow: ${theme.shadows[10]};
-  `
-);
+  `;
+});
 
 const defaultRows = [
   { id: 1, nom: "Wissart", prenom: "Lolita" },
@@ -44,7 +53,6 @@ const defaultRows = [
 ];
 
 function CustomColumnMenuComponent(props) {
-  // const classes = useStyles();
   const { hideMenu, currentColumn, color, ...other } = props;
   const possibleColumnNames = ["nom", "prenom"];
 
@@ -93,6 +101,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function Utilisateur() {
   const theme = useTheme();
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [deleteDisable, setDeleteDisable] = React.useState(true);
   const [rows, setRows] = React.useState(defaultRows);
@@ -129,12 +138,9 @@ export default function Utilisateur() {
   };
 
   const handleEdit = (params) => {
-    // console.log(params);
     const { row: user } = params;
-    // setUserToEdit(user);
     userToEdit.current = user;
     handleOpenEditUser();
-    // showSnackBar();
   };
 
   const newUser = (values) => {
@@ -164,19 +170,6 @@ export default function Utilisateur() {
     if (alreadyExist) {
       return ALREADY_EXIST;
     } else {
-      // const ids = rows.map((item) => item.id);
-      // let newId = 1;
-      // while (ids.includes(newId)) {
-      //   newId += 1;
-      // }
-      // const filteredRows = rows.filter((item) => item.id !== id);
-      // console.log("id", id);
-      // console.log("filteredRows", filteredRows);
-      // setRows([
-      //   ...filteredRows,
-      //   { id, nom: values.nom, prenom: values.prenom },
-      // ]);
-
       const mappedRows = rows.map((item) => {
         if (item.id === id) {
           return { ...item, nom: values.nom, prenom: values.prenom };
@@ -184,28 +177,32 @@ export default function Utilisateur() {
           return item;
         }
       });
-      console.log("mappedRows", mappedRows);
       setRows(mappedRows);
       showSnackBar("Utilisateur modifié");
       return SUCCESS;
     }
   };
 
+  let columnWidth = 150;
+  if (matchesSM) {
+    columnWidth = 90;
+  }
+
   const columns = [
     {
       id: 1,
       field: "nom",
       headerName: "Nom",
-      width: 150,
+      width: columnWidth,
       hide: false,
       hideSortIcons: true,
     },
-    { id: 2, field: "prenom", headerName: "Prénom", width: 150 },
+    { id: 2, field: "prenom", headerName: "Prénom", width: columnWidth },
     {
       id: 3,
       field: "edit",
-      headerName: "Editer",
-      width: 70,
+      headerName: matchesSM ? "Edi." : "Editer",
+      width: columnWidth / 1.5,
       disableColumnMenu: true,
       disableColumnSelector: true,
 
@@ -219,6 +216,11 @@ export default function Utilisateur() {
       },
     },
   ];
+
+  let density = "standard";
+  if (matchesSM) {
+    density = "compact";
+  }
 
   return (
     <>
@@ -246,13 +248,23 @@ export default function Utilisateur() {
             style={{ marginBottom: theme.spacing(2) }}
           >
             <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={<ArrowBackIosIcon fontSize="large" />}
-              >
-                <Link href="/">Accueil</Link>
-              </Button>
+              {matchesSM ? (
+                <Link href="/">
+                  <Button variant="contained" color="secondary">
+                    <ArrowBackIosIcon fontSize="small" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<ArrowBackIosIcon fontSize="large" />}
+                  >
+                    Accueil
+                  </Button>
+                </Link>
+              )}
             </Grid>
             <Grid item>
               <Typography variant="h6" component="h2" color="primary">
@@ -260,14 +272,24 @@ export default function Utilisateur() {
               </Typography>
             </Grid>
             <Grid item>
-              <Button
-                variant="outlined"
-                color="secondary"
-                startIcon={<PersonAddIcon />}
-                onClick={handleOpenCreateUser}
-              >
-                Nouvel utilisateur
-              </Button>
+              {matchesSM ? (
+                <Button
+                  aria-label="add"
+                  color="secondary"
+                  onClick={handleOpenCreateUser}
+                >
+                  <PersonAddIcon />
+                </Button>
+              ) : (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<PersonAddIcon />}
+                  onClick={handleOpenCreateUser}
+                >
+                  Nouvel utilisateur
+                </Button>
+              )}
             </Grid>
           </Grid>
           <Grid
@@ -285,22 +307,22 @@ export default function Utilisateur() {
           </Grid>
           <div
             style={{
-              height: "60vh",
+              height: "70vh",
+              width: "100%",
             }}
           >
             <DataGrid
               rows={rows}
               columns={columns}
+              density={density}
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={(newSelectionModel) => {
-                // console.log("newSelectionModel", newSelectionModel);
                 if (newSelectionModel.length === 0 && !deleteDisable) {
                   setDeleteDisable(true);
                 } else if (newSelectionModel.length !== 0 && deleteDisable) {
                   setDeleteDisable(false);
                 }
-                // setSelectionToDelete(newSelectionModel);
                 selectionToDelete.current = newSelectionModel;
               }}
               selectionModel={selectionToDelete.current}

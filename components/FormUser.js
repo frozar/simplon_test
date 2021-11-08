@@ -7,19 +7,10 @@ import Modal from "@mui/material/Modal";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { Formik, Form, Field } from "formik";
-
-const styleModal = {
-  position: "absolute",
-  left: "50%",
-  top: "20%",
-  transform: "translate(-50%, 0%)",
-  bgcolor: "background.paper",
-  borderRadius: "20px",
-  boxShadow: 24,
-  p: 2,
-};
 
 function AutofocusTextField(props) {
   return <TextField {...props} autoFocus />;
@@ -34,6 +25,25 @@ export default function FormUser(props) {
     validationSchema,
     onSubmit,
   } = props;
+  const theme = useTheme();
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
+
+  let boxWidth = "60%";
+  if (matchesSM) {
+    boxWidth = "90%";
+  }
+
+  const styleModal = {
+    position: "absolute",
+    left: "50%",
+    top: "20%",
+    transform: "translate(-50%, 0%)",
+    bgcolor: "background.paper",
+    borderRadius: "20px",
+    boxShadow: 24,
+    p: 2,
+    width: boxWidth,
+  };
 
   return (
     <Modal
@@ -43,7 +53,12 @@ export default function FormUser(props) {
       aria-describedby="form-user-popup"
     >
       <Box sx={styleModal}>
-        <Grid container justifyContent="center">
+        <Grid
+          container
+          justifyContent="center"
+          direction="column"
+          alignItems="center"
+        >
           <Grid item>
             <Typography variant="h6" component="h2" color="primary">
               {title}
@@ -56,7 +71,6 @@ export default function FormUser(props) {
             onSubmit={onSubmit}
           >
             {(formik) => {
-              // console.log("0 formik", formik);
               return (
                 <Form>
                   <Grid

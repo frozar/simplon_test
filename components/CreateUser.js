@@ -28,7 +28,7 @@ export default function CreateUser(props) {
 
   return (
     <FormUser
-      title="Créer un utilisateur"
+      title="Nouvel utilisateur"
       openModal={openModal}
       handleClose={handleClose}
       initialValues={initialValues}
