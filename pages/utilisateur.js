@@ -6,17 +6,6 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-
-// import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
-// import {
-//   GridColumnMenu,
-//   GridColumnMenuContainer,
-//   GridFilterMenuItem,
-//   SortGridMenuItems,
-//   useGridApiRef,
-//   DataGridPro,
-// } from "@mui/x-data-grid-pro";
-
 import {
   DataGrid,
   GridColumnMenu,
@@ -29,6 +18,7 @@ import {
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 import Link from "../src/Link";
 
@@ -45,18 +35,6 @@ const defaultRows = [
   { id: 1, nom: "Wissart", prenom: "Lolita" },
   { id: 2, nom: "Deniset", prenom: "Armand" },
   { id: 3, nom: "Rozar", prenom: "Fabien" },
-];
-
-const columns = [
-  {
-    id: 1,
-    field: "nom",
-    headerName: "Nom",
-    width: 150,
-    hide: false,
-    hideSortIcons: true,
-  },
-  { id: 2, field: "prenom", headerName: "Prénom", width: 150 },
 ];
 
 function CustomColumnMenuComponent(props) {
@@ -110,6 +88,39 @@ export default function Utilisateur() {
     const filtedRows = rows.filter((item) => !selectionModel.includes(item.id));
     setRows(filtedRows);
   };
+
+  const handleEdit = (params) => {
+    console.log(params);
+  };
+
+  const columns = [
+    {
+      id: 1,
+      field: "nom",
+      headerName: "Nom",
+      width: 150,
+      hide: false,
+      hideSortIcons: true,
+    },
+    { id: 2, field: "prenom", headerName: "Prénom", width: 150 },
+    {
+      id: 3,
+      field: "edit",
+      headerName: "Editer",
+      width: 70,
+      disableColumnMenu: true,
+      disableColumnSelector: true,
+
+      renderCell: (params) => {
+        const { id } = params.row;
+        return (
+          <IconButton aria-label="edit" onClick={() => handleEdit(params)}>
+            <EditIcon />
+          </IconButton>
+        );
+      },
+    },
+  ];
 
   return (
     <>
@@ -182,6 +193,7 @@ export default function Utilisateur() {
               rows={rows}
               columns={columns}
               checkboxSelection
+              disableSelectionOnClick
               onSelectionModelChange={(newSelectionModel) => {
                 // console.log("newSelectionModel", newSelectionModel);
                 if (newSelectionModel.length === 0 && !deleteDisable) {
