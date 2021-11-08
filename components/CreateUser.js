@@ -17,21 +17,21 @@ const styleModal = {
   p: 2,
 };
 
-export default function AdministrationPanel(props) {
+export default function CreateUser(props) {
   const { openModal, handleClose } = props;
 
   return (
     <Modal
       open={openModal}
       onClose={handleClose}
-      aria-labelledby="administration-panel"
-      aria-describedby="administration-panel"
+      aria-labelledby="create-user-popup"
+      aria-describedby="create-user-popup"
     >
       <Box sx={styleModal}>
         <Grid container justifyContent="center">
           <Grid item>
             <Typography variant="h6" component="h2">
-              Panneau d&apos;administration
+              Créer un utilisateur
             </Typography>
           </Grid>
           <Grid
@@ -43,7 +43,7 @@ export default function AdministrationPanel(props) {
             <Grid item>
               <Button variant="contained">
                 <Link href="/utilisateur">
-                  <Typography variant="button">
+                  <Typography id="admin-utilisateur-button" variant="button">
                     Gérer les utilisateurs
                   </Typography>
                 </Link>
@@ -52,7 +52,7 @@ export default function AdministrationPanel(props) {
             <Grid item>
               <Button variant="contained">
                 <Link href="/ordinateur">
-                  <Typography variant="button">
+                  <Typography id="admin-machine-button" variant="button">
                     Gérer les ordinateurs
                   </Typography>
                 </Link>

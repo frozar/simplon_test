@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import Link from "../src/Link";
+import CreateUser from "../components/CreateUser";
 
 const CustomizedPaper = styled(Paper)(
   ({ theme }) => `
@@ -81,11 +82,17 @@ export default function Utilisateur() {
   const theme = useTheme();
 
   const [deleteDisable, setDeleteDisable] = React.useState(true);
-  const [selectionModel, setSelectionModel] = React.useState([]);
+  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
   const [rows, setRows] = React.useState(defaultRows);
+  const [openCreateUser, setOpenCreateUser] = React.useState(false);
+
+  const handleOpenCreateUser = () => setOpenCreateUser(true);
+  const handleCloseCreateUser = () => setOpenCreateUser(false);
 
   const handleDelete = () => {
-    const filtedRows = rows.filter((item) => !selectionModel.includes(item.id));
+    const filtedRows = rows.filter(
+      (item) => !selectionToDelete.includes(item.id)
+    );
     setRows(filtedRows);
   };
 
@@ -166,6 +173,7 @@ export default function Utilisateur() {
                 variant="outlined"
                 color="secondary"
                 startIcon={<PersonAddIcon />}
+                onClick={handleOpenCreateUser}
               >
                 Nouvel utilisateur
               </Button>
@@ -201,9 +209,9 @@ export default function Utilisateur() {
                 } else if (newSelectionModel.length !== 0 && deleteDisable) {
                   setDeleteDisable(false);
                 }
-                setSelectionModel(newSelectionModel);
+                setSelectionToDelete(newSelectionModel);
               }}
-              selectionModel={selectionModel}
+              selectionModel={selectionToDelete}
               components={{
                 ColumnMenu: CustomColumnMenuComponent,
                 NoRowsOverlay: CustomNoRowsOverlay,
@@ -212,6 +220,10 @@ export default function Utilisateur() {
           </div>
         </CustomizedPaper>
       </Grid>
+      <CreateUser
+        openModal={openCreateUser}
+        handleClose={handleCloseCreateUser}
+      />
     </>
   );
 }
