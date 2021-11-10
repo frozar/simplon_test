@@ -11,17 +11,10 @@ import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import PersonIcon from "@mui/icons-material/Person";
 import ComputerIcon from "@mui/icons-material/Computer";
 
-import Timeline, {
-  TimelineHeaders,
-  SidebarHeader,
-  DateHeader,
-} from "react-calendar-timeline/lib";
 import moment from "moment";
-// make sure you include the timeline stylesheet or the timeline
-// will not be styled
-import "react-calendar-timeline/lib/Timeline.css";
 
 import Container from "../components/Container";
+import Calendar from "../components/Calendar";
 
 import Link from "../src/Link";
 
@@ -58,8 +51,11 @@ export default function Home() {
   const [calendarWidth, setCalendarWidth] = React.useState(null);
 
   React.useEffect(() => {
-    // console.dir(headerRef.current.offsetWidth);
-    setCalendarWidth(headerRef.current.offsetWidth);
+    setTimeout(() => {
+      // console.dir(headerRef.current);
+      // console.log("offsetWidth", headerRef.current.offsetWidth);
+      setCalendarWidth(headerRef.current.offsetWidth);
+    }, 0);
   }, [headerRef]);
 
   return (
@@ -160,26 +156,11 @@ export default function Home() {
           </Grid>
 
           {calendarWidth && (
-            <Grid
-              container
-              item
-              style={{
-                width: `${calendarWidth}px`,
-                display: "block",
-              }}
-            >
-              <Timeline
-                groups={groups}
-                items={items}
-                defaultTimeStart={moment().add(-12, "hour")}
-                defaultTimeEnd={moment().add(12, "hour")}
-              >
-                <TimelineHeaders className="sticky">
-                  <DateHeader unit="primaryHeader" />
-                  <DateHeader />
-                </TimelineHeaders>
-              </Timeline>
-            </Grid>
+            <Calendar
+              groups={groups}
+              items={items}
+              calendarWidth={calendarWidth}
+            />
           )}
         </Grid>
       </Container>
