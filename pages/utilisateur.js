@@ -188,7 +188,7 @@ export default function Utilisateur() {
             <Grid item>
               {matchesSM ? (
                 <Button
-                  aria-label="add"
+                  aria-label="add-user"
                   color="secondary"
                   onClick={handleOpenCreateUser}
                 >
@@ -196,6 +196,7 @@ export default function Utilisateur() {
                 </Button>
               ) : (
                 <Button
+                  aria-label="add-user"
                   variant="outlined"
                   color="secondary"
                   startIcon={<PersonAddIcon />}
@@ -211,6 +212,7 @@ export default function Utilisateur() {
             setRows={setRows}
             columns={columns}
             showSnackBar={showSnackBar}
+            deleteMessage="Utilisateur supprimé"
           />
         </Grid>
       </Container>

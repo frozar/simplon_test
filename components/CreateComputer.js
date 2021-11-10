@@ -1,24 +1,22 @@
 import * as Yup from "yup";
 
-import FormUser from "./FormUser";
+import FormComputer from "./FormComputer";
 import { ALREADY_EXIST } from "../src/constant";
 
-export default function EditUser(props) {
-  const { openModal, handleClose, userToEdit, editUser } = props;
+export default function CreateComputer(props) {
+  const { openModal, handleClose, newComputer } = props;
 
   const initialValues = {
-    nom: userToEdit && userToEdit.nom ? userToEdit.nom : "",
-    prenom: userToEdit && userToEdit.prenom ? userToEdit.prenom : "",
+    nom: "",
   };
   const validationSchema = Yup.object({
     nom: Yup.string().max(100, "Nom trop grand").required("Nom ?"),
-    prenom: Yup.string().max(100, "Prénom trop grand").required("Prénom ?"),
   });
 
   const onSubmit = async (values, formik) => {
-    const res = editUser(values, userToEdit.id);
+    const res = newComputer(values);
     if (res === ALREADY_EXIST) {
-      const errorMessage = "Cet utilisateur existe déjà";
+      const errorMessage = "Cet ordinateur existe déjà";
       console.error(errorMessage);
       formik.setErrors({ ...formik.errors, global: errorMessage });
     } else {
@@ -27,8 +25,8 @@ export default function EditUser(props) {
   };
 
   return (
-    <FormUser
-      title="Editer un utilisateur"
+    <FormComputer
+      title="Nouvel ordinateur"
       openModal={openModal}
       handleClose={handleClose}
       initialValues={initialValues}
