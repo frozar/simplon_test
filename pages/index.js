@@ -3,7 +3,9 @@ import Head from "next/head";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+
 import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 
 import Timeline, {
   TimelineHeaders,
@@ -15,17 +17,11 @@ import moment from "moment";
 // will not be styled
 import "react-calendar-timeline/lib/Timeline.css";
 
-import AdministrationPanel from "../components/AdministrationPanel";
+import Container from "../components/Container";
 
-const styleLogoutButton = {
-  position: "absolute",
-  top: "0",
-  right: "0",
-  marginRight: "14px",
-  marginTop: "5px",
-};
+import Link from "../src/Link";
 
-const groups = [...Array(5).keys()].map((i) => ({ id: i, title: `PC ${i}` }));
+const groups = [...Array(50).keys()].map((i) => ({ id: i, title: `PC ${i}` }));
 const items = [
   {
     id: 1,
@@ -51,9 +47,13 @@ const items = [
 ];
 
 export default function Home() {
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpen = () => setOpenModal(true);
-  const handleClose = () => setOpenModal(false);
+  const headerRef = React.useRef(null);
+  const [calendarWidth, setCalendarWidth] = React.useState(null);
+
+  React.useEffect(() => {
+    console.dir(headerRef.current.offsetWidth);
+    setCalendarWidth(headerRef.current.offsetWidth);
+  }, [headerRef]);
 
   return (
     <>
@@ -65,53 +65,86 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Button
-        variant="contained"
-        color="secondary"
-        startIcon={<LogoutIcon fontSize="large" />}
-        sx={styleLogoutButton}
-      >
-        Logout
-      </Button>
-      <Grid container justifyContent="center">
-        <Grid item>
-          <Typography variant="h1">RéservAli</Typography>
+
+      <Container>
+        <Grid container direction="column" spacing={1}>
+          <Grid
+            container
+            justifyContent="space-between"
+            alignItems="center"
+            ref={headerRef}
+          >
+            <Grid item>
+              <Grid
+                container
+                direction="column"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={1}
+              >
+                <Grid item>
+                  <Link href="/utilisateur">
+                    <Button
+                      variant="contained"
+                      startIcon={<SettingsApplicationsIcon fontSize="large" />}
+                    >
+                      <Typography variant="button">Utilisateur</Typography>
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link href="/ordinateur">
+                    <Button
+                      variant="contained"
+                      startIcon={<SettingsApplicationsIcon fontSize="large" />}
+                    >
+                      <Typography variant="button">Ordinateur</Typography>
+                    </Button>
+                  </Link>
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item>
+              <Typography variant="h3" component="h1" color="primary">
+                RéservAli
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<LogoutIcon fontSize="large" />}
+              >
+                Logout
+              </Button>
+            </Grid>
+          </Grid>
+
+          {calendarWidth && (
+            <Grid
+              container
+              item
+              style={{
+                width: `${calendarWidth}px`,
+                display: "block",
+              }}
+            >
+              <Timeline
+                groups={groups}
+                items={items}
+                defaultTimeStart={moment().add(-12, "hour")}
+                defaultTimeEnd={moment().add(12, "hour")}
+              >
+                <TimelineHeaders className="sticky">
+                  <DateHeader unit="primaryHeader" />
+                  <DateHeader />
+                </TimelineHeaders>
+              </Timeline>
+            </Grid>
+          )}
         </Grid>
-      </Grid>
-      <Timeline
-        groups={groups}
-        items={items}
-        defaultTimeStart={moment().add(-12, "hour")}
-        defaultTimeEnd={moment().add(12, "hour")}
-      >
-        <TimelineHeaders className="sticky">
-          <SidebarHeader>
-            {({ getRootProps }) => {
-              return (
-                <div {...getRootProps()}>
-                  <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    style={{ height: "100%" }}
-                  >
-                    <Grid item>
-                      <Button variant="contained" onClick={handleOpen}>
-                        <Typography id="admin-button" variant="button">
-                          Admin
-                        </Typography>
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </div>
-              );
-            }}
-          </SidebarHeader>
-          <DateHeader unit="primaryHeader" />
-          <DateHeader />
-        </TimelineHeaders>
-      </Timeline>
-      <AdministrationPanel openModal={openModal} handleClose={handleClose} />
+      </Container>
     </>
   );
 }
