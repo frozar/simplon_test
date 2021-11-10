@@ -3,9 +3,13 @@ import Head from "next/head";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
+import PersonIcon from "@mui/icons-material/Person";
+import ComputerIcon from "@mui/icons-material/Computer";
 
 import Timeline, {
   TimelineHeaders,
@@ -47,6 +51,9 @@ const items = [
 ];
 
 export default function Home() {
+  const theme = useTheme();
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
+
   const headerRef = React.useRef(null);
   const [calendarWidth, setCalendarWidth] = React.useState(null);
 
@@ -70,6 +77,7 @@ export default function Home() {
         <Grid container direction="column" spacing={1}>
           <Grid
             container
+            item
             justifyContent="space-between"
             alignItems="center"
             ref={headerRef}
@@ -84,22 +92,44 @@ export default function Home() {
               >
                 <Grid item>
                   <Link href="/utilisateur">
-                    <Button
-                      variant="contained"
-                      startIcon={<SettingsApplicationsIcon fontSize="large" />}
-                    >
-                      <Typography variant="button">Utilisateur</Typography>
-                    </Button>
+                    {matchesSM ? (
+                      <Button
+                        variant="contained"
+                        startIcon={<SettingsApplicationsIcon />}
+                      >
+                        <PersonIcon />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        startIcon={
+                          <SettingsApplicationsIcon fontSize="large" />
+                        }
+                      >
+                        <Typography variant="button">Utilisateur</Typography>
+                      </Button>
+                    )}
                   </Link>
                 </Grid>
                 <Grid item>
                   <Link href="/ordinateur">
-                    <Button
-                      variant="contained"
-                      startIcon={<SettingsApplicationsIcon fontSize="large" />}
-                    >
-                      <Typography variant="button">Ordinateur</Typography>
-                    </Button>
+                    {matchesSM ? (
+                      <Button
+                        variant="contained"
+                        startIcon={<SettingsApplicationsIcon />}
+                      >
+                        <ComputerIcon />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        startIcon={
+                          <SettingsApplicationsIcon fontSize="large" />
+                        }
+                      >
+                        <Typography variant="button">Ordinateur</Typography>
+                      </Button>
+                    )}
                   </Link>
                 </Grid>
               </Grid>
@@ -111,13 +141,21 @@ export default function Home() {
               </Typography>
             </Grid>
             <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={<LogoutIcon fontSize="large" />}
-              >
-                Logout
-              </Button>
+              <Link href="/login">
+                {matchesSM ? (
+                  <Button variant="contained" color="secondary">
+                    <LogoutIcon />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<LogoutIcon fontSize="large" />}
+                  >
+                    Logout
+                  </Button>
+                )}
+              </Link>
             </Grid>
           </Grid>
 
