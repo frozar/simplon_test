@@ -56,7 +56,7 @@ function CustomNoRowsOverlay() {
 }
 
 export default function CustomDataGrid(props) {
-  const { rows, setRows, columns, showSnackBar } = props;
+  const { rows, setRows, columns, showSnackBar, deleteMessage } = props;
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -68,7 +68,7 @@ export default function CustomDataGrid(props) {
       (item) => !selectionToDelete.current.includes(item.id)
     );
     setRows(filtedRows);
-    showSnackBar("Utilisateur supprimé");
+    showSnackBar(deleteMessage);
   };
 
   let density = "standard";
