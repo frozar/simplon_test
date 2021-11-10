@@ -67,7 +67,7 @@ export default function Home() {
       </Head>
 
       <Container>
-        <Grid container direction="column" spacing={0}>
+        <Grid container direction="column" spacing={1}>
           <Grid
             container
             justifyContent="space-between"
@@ -128,7 +128,6 @@ export default function Home() {
               style={{
                 width: `${calendarWidth}px`,
                 display: "block",
-                marginTop: "16px",
               }}
             >
               <Timeline
@@ -136,7 +135,6 @@ export default function Home() {
                 items={items}
                 defaultTimeStart={moment().add(-12, "hour")}
                 defaultTimeEnd={moment().add(12, "hour")}
-                // sidebarWidth="80"
               >
                 <TimelineHeaders className="sticky">
                   <DateHeader unit="primaryHeader" />
