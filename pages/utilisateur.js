@@ -6,7 +6,6 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-// import Paper from "@mui/material/Paper";
 import {
   DataGrid,
   GridColumnMenu,
@@ -219,97 +218,100 @@ export default function Utilisateur() {
       </Head>
 
       <Container>
-        <Grid
-          container
-          justifyContent="space-between"
-          alignItems="center"
-          style={{ marginBottom: theme.spacing(2) }}
-        >
-          <Grid item>
-            {matchesSM ? (
-              <Link href="/">
-                <Button variant="contained" color="secondary">
-                  <ArrowBackIosIcon fontSize="small" />
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<ArrowBackIosIcon fontSize="large" />}
-                >
-                  Accueil
-                </Button>
-              </Link>
-            )}
-          </Grid>
-          <Grid item>
-            <Typography variant="h6" component="h2" color="primary">
-              Utilisateurs
-            </Typography>
-          </Grid>
-          <Grid item>
-            {matchesSM ? (
-              <Button
-                aria-label="add"
-                color="secondary"
-                onClick={handleOpenCreateUser}
-              >
-                <PersonAddIcon />
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                color="secondary"
-                startIcon={<PersonAddIcon />}
-                onClick={handleOpenCreateUser}
-              >
-                Nouvel utilisateur
-              </Button>
-            )}
-          </Grid>
-        </Grid>
-        <Grid
-          container
-          justifyContent="flex-start"
-          style={{ marginBottom: theme.spacing(1) }}
-        >
-          <IconButton
-            aria-label="delete"
-            disabled={deleteDisable}
-            onClick={handleDelete}
+        <Grid container direction="column" spacing={1}>
+          <Grid
+            container
+            item
+            justifyContent="space-between"
+            alignItems="center"
           >
-            <DeleteIcon />
-          </IconButton>
+            <Grid item>
+              {matchesSM ? (
+                <Link href="/">
+                  <Button variant="contained" color="secondary">
+                    <ArrowBackIosIcon fontSize="small" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<ArrowBackIosIcon fontSize="large" />}
+                  >
+                    Accueil
+                  </Button>
+                </Link>
+              )}
+            </Grid>
+            <Grid item>
+              <Typography variant="h6" component="h2" color="primary">
+                Utilisateurs
+              </Typography>
+            </Grid>
+            <Grid item>
+              {matchesSM ? (
+                <Button
+                  aria-label="add"
+                  color="secondary"
+                  onClick={handleOpenCreateUser}
+                >
+                  <PersonAddIcon />
+                </Button>
+              ) : (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<PersonAddIcon />}
+                  onClick={handleOpenCreateUser}
+                >
+                  Nouvel utilisateur
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+
+          <Grid container item justifyContent="flex-start">
+            <IconButton
+              aria-label="delete"
+              disabled={deleteDisable}
+              onClick={handleDelete}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+
+          <Grid container item>
+            <Grid
+              item
+              style={{
+                height: "70vh",
+                width: "100%",
+              }}
+            >
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                density={density}
+                checkboxSelection
+                disableSelectionOnClick
+                onSelectionModelChange={(newSelectionModel) => {
+                  if (newSelectionModel.length === 0 && !deleteDisable) {
+                    setDeleteDisable(true);
+                  } else if (newSelectionModel.length !== 0 && deleteDisable) {
+                    setDeleteDisable(false);
+                  }
+                  selectionToDelete.current = newSelectionModel;
+                }}
+                selectionModel={selectionToDelete.current}
+                components={{
+                  ColumnMenu: CustomColumnMenuComponent,
+                  NoRowsOverlay: CustomNoRowsOverlay,
+                }}
+              />
+            </Grid>
+          </Grid>
         </Grid>
-        <div
-          style={{
-            height: "70vh",
-            width: "100%",
-          }}
-        >
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            density={density}
-            checkboxSelection
-            disableSelectionOnClick
-            onSelectionModelChange={(newSelectionModel) => {
-              if (newSelectionModel.length === 0 && !deleteDisable) {
-                setDeleteDisable(true);
-              } else if (newSelectionModel.length !== 0 && deleteDisable) {
-                setDeleteDisable(false);
-              }
-              selectionToDelete.current = newSelectionModel;
-            }}
-            selectionModel={selectionToDelete.current}
-            components={{
-              ColumnMenu: CustomColumnMenuComponent,
-              NoRowsOverlay: CustomNoRowsOverlay,
-            }}
-          />
-        </div>
       </Container>
 
       <CreateUser
