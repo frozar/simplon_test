@@ -6,14 +6,6 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-import {
-  DataGrid,
-  GridColumnMenu,
-  GridColumnMenuContainer,
-  GridFilterMenuItem,
-  SortGridMenuItems,
-  GridOverlay,
-} from "@mui/x-data-grid";
 import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
 import MuiAlert from "@mui/material/Alert";
@@ -21,13 +13,13 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import Link from "../src/Link";
 import CreateUser from "../components/CreateUser";
 import EditUser from "../components/EditUser";
 import Container from "../components/Container";
+import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 
 const defaultRows = [
@@ -35,45 +27,6 @@ const defaultRows = [
   { id: 2, nom: "Deniset", prenom: "Armand" },
   { id: 3, nom: "Rozar", prenom: "Fabien" },
 ];
-
-function CustomColumnMenuComponent(props) {
-  const { hideMenu, currentColumn, color, ...other } = props;
-  const possibleColumnNames = ["nom", "prenom"];
-
-  if (possibleColumnNames.includes(currentColumn.field)) {
-    return (
-      <GridColumnMenuContainer
-        hideMenu={hideMenu}
-        currentColumn={currentColumn}
-        {...other}
-      >
-        <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
-        <GridFilterMenuItem onClick={hideMenu} column={currentColumn} />
-      </GridColumnMenuContainer>
-    );
-  }
-
-  return (
-    <GridColumnMenu
-      hideMenu={hideMenu}
-      currentColumn={currentColumn}
-      {...other}
-    />
-  );
-}
-
-function CustomNoRowsOverlay() {
-  const theme = useTheme();
-  return (
-    <GridOverlay
-      style={{
-        background: theme.palette.grey[200],
-      }}
-    >
-      <Typography variant="caption">Pas d&apos;utilisateurs</Typography>
-    </GridOverlay>
-  );
-}
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -87,13 +40,11 @@ export default function Utilisateur() {
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [deleteDisable, setDeleteDisable] = React.useState(true);
   const [rows, setRows] = React.useState(defaultRows);
   const [openCreateUser, setOpenCreateUser] = React.useState(false);
   const [openEditUser, setOpenEditUser] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
-  const selectionToDelete = React.useRef([]);
   const userToEdit = React.useRef(null);
   const notificationMessage = React.useRef("");
 
@@ -102,15 +53,6 @@ export default function Utilisateur() {
 
   const handleOpenEditUser = () => setOpenEditUser(true);
   const handleCloseEditUser = () => setOpenEditUser(false);
-
-  const handleDelete = () => {
-    const filtedRows = rows.filter(
-      (item) => !selectionToDelete.current.includes(item.id)
-    );
-    setRows(filtedRows);
-    notificationMessage.current = "Utilisateur supprimé";
-    setOpenSnackBar(true);
-  };
 
   const showSnackBar = (notificationMessageArg) => {
     notificationMessage.current = notificationMessageArg;
@@ -191,7 +133,6 @@ export default function Utilisateur() {
       disableColumnSelector: true,
 
       renderCell: (params) => {
-        const { id } = params.row;
         return (
           <IconButton aria-label="edit" onClick={() => handleEdit(params)}>
             <EditIcon />
@@ -200,11 +141,6 @@ export default function Utilisateur() {
       },
     },
   ];
-
-  let density = "standard";
-  if (matchesSM) {
-    density = "compact";
-  }
 
   return (
     <>
@@ -270,47 +206,12 @@ export default function Utilisateur() {
               )}
             </Grid>
           </Grid>
-
-          <Grid container item justifyContent="flex-start">
-            <IconButton
-              aria-label="delete"
-              disabled={deleteDisable}
-              onClick={handleDelete}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Grid>
-
-          <Grid container item>
-            <Grid
-              item
-              style={{
-                height: "70vh",
-                width: "100%",
-              }}
-            >
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                density={density}
-                checkboxSelection
-                disableSelectionOnClick
-                onSelectionModelChange={(newSelectionModel) => {
-                  if (newSelectionModel.length === 0 && !deleteDisable) {
-                    setDeleteDisable(true);
-                  } else if (newSelectionModel.length !== 0 && deleteDisable) {
-                    setDeleteDisable(false);
-                  }
-                  selectionToDelete.current = newSelectionModel;
-                }}
-                selectionModel={selectionToDelete.current}
-                components={{
-                  ColumnMenu: CustomColumnMenuComponent,
-                  NoRowsOverlay: CustomNoRowsOverlay,
-                }}
-              />
-            </Grid>
-          </Grid>
+          <CustomDataGrid
+            rows={rows}
+            setRows={setRows}
+            columns={columns}
+            showSnackBar={showSnackBar}
+          />
         </Grid>
       </Container>
 
