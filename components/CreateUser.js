@@ -16,7 +16,7 @@ export default function CreateUser(props) {
   });
 
   const onSubmit = async (values, formik) => {
-    const res = newUser(values);
+    const res = await newUser(values);
     if (res === ALREADY_EXIST) {
       const errorMessage = "Cet utilisateur existe déjà";
       console.error(errorMessage);

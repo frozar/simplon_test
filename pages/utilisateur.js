@@ -21,12 +21,14 @@ import EditUser from "../components/EditUser";
 import Container from "../components/Container";
 import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
+import {
+  retrieveUserInDB,
+  newUserInDB,
+  updateUserInDB,
+  deleteUserInDB,
+} from "../src/db/utilisateur";
 
-const defaultRows = [
-  { id: 1, nom: "Wissart", prenom: "Lolita" },
-  { id: 2, nom: "Deniset", prenom: "Armand" },
-  { id: 3, nom: "Rozar", prenom: "Fabien" },
-];
+const defaultRows = [];
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -46,7 +48,19 @@ export default function Utilisateur() {
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
   const userToEdit = React.useRef(null);
+  const severity = React.useRef("success");
   const notificationMessage = React.useRef("");
+  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
+
+  const updateRowsFromDB = React.useCallback(async () => {
+    const users = await retrieveUserInDB();
+    setRows(users);
+  }, []);
+
+  // Init rows
+  React.useEffect(() => {
+    updateRowsFromDB();
+  }, [updateRowsFromDB]);
 
   const handleOpenCreateUser = () => setOpenCreateUser(true);
   const handleCloseCreateUser = () => setOpenCreateUser(false);
@@ -54,7 +68,8 @@ export default function Utilisateur() {
   const handleOpenEditUser = () => setOpenEditUser(true);
   const handleCloseEditUser = () => setOpenEditUser(false);
 
-  const showSnackBar = (notificationMessageArg) => {
+  const showSnackBar = (notificationMessageArg, severityArg = "success") => {
+    severity.current = severityArg;
     notificationMessage.current = notificationMessageArg;
     setOpenSnackBar(true);
   };
@@ -69,7 +84,7 @@ export default function Utilisateur() {
     handleOpenEditUser();
   };
 
-  const newUser = (values) => {
+  const newUser = async (values) => {
     const alreadyExist =
       rows.filter(
         (item) => item.nom === values.nom && item.prenom === values.prenom
@@ -77,13 +92,16 @@ export default function Utilisateur() {
     if (alreadyExist) {
       return ALREADY_EXIST;
     } else {
-      const ids = rows.map((item) => item.id);
-      let newId = 1;
-      while (ids.includes(newId)) {
-        newId += 1;
-      }
-      setRows([...rows, { id: newId, nom: values.nom, prenom: values.prenom }]);
-      showSnackBar("Utilisateur ajouté");
+      const process = async () => {
+        const newUser = await newUserInDB(values);
+        if (newUser !== null) {
+          showSnackBar("Utilisateur ajouté");
+          setRows([...rows, newUser]);
+        } else {
+          showSnackBar("ERROR: ajout utilisateur", "error");
+        }
+      };
+      process();
       return SUCCESS;
     }
   };
@@ -96,17 +114,32 @@ export default function Utilisateur() {
     if (alreadyExist) {
       return ALREADY_EXIST;
     } else {
-      const mappedRows = rows.map((item) => {
-        if (item.id === id) {
-          return { ...item, nom: values.nom, prenom: values.prenom };
-        } else {
-          return item;
+      const process = async () => {
+        try {
+          await updateUserInDB(values, id);
+          showSnackBar("Utilisateur modifié");
+          updateRowsFromDB();
+        } catch (e) {
+          console.error("Error modification utilisateur: ", e);
+          showSnackBar("ERROR: modification utilisateur", "error");
         }
-      });
-      setRows(mappedRows);
-      showSnackBar("Utilisateur modifié");
+      };
+      process();
       return SUCCESS;
     }
+  };
+
+  const deleteUser = () => {
+    const process = async () => {
+      const toWait = [];
+      for (const userId of selectionToDelete) {
+        toWait.push(deleteUserInDB(userId));
+      }
+      await Promise.all(toWait);
+      showSnackBar("Utilisateur supprimé");
+      updateRowsFromDB();
+    };
+    process();
   };
 
   let columnWidth = 150;
@@ -209,10 +242,11 @@ export default function Utilisateur() {
           </Grid>
           <CustomDataGrid
             rows={rows}
-            setRows={setRows}
             columns={columns}
-            showSnackBar={showSnackBar}
-            deleteMessage="Utilisateur supprimé"
+            handleDelete={deleteUser}
+            selectionToDelete={selectionToDelete}
+            setSelectionToDelete={setSelectionToDelete}
+            emptyMessage="Pas d'utilisateurs"
           />
         </Grid>
       </Container>
@@ -235,7 +269,11 @@ export default function Utilisateur() {
         TransitionComponent={SlideTransition}
         autoHideDuration={3000}
       >
-        <Alert onClose={hideSnackBar} severity="success" sx={{ width: "100%" }}>
+        <Alert
+          onClose={hideSnackBar}
+          severity={severity.current}
+          sx={{ width: "100%" }}
+        >
           {notificationMessage.current}
         </Alert>
       </Snackbar>

@@ -42,34 +42,35 @@ function CustomColumnMenuComponent(props) {
   );
 }
 
-function CustomNoRowsOverlay() {
+function CustomNoRowsOverlay(message) {
   const theme = useTheme();
-  return (
-    <GridOverlay
-      style={{
-        background: theme.palette.grey[200],
-      }}
-    >
-      <Typography variant="caption">Pas d&apos;utilisateurs</Typography>
-    </GridOverlay>
-  );
+  // eslint-disable-next-line react/display-name
+  return () => {
+    return (
+      <GridOverlay
+        style={{
+          background: theme.palette.grey[200],
+        }}
+      >
+        <Typography variant="caption">{message}</Typography>
+      </GridOverlay>
+    );
+  };
 }
 
 export default function CustomDataGrid(props) {
-  const { rows, setRows, columns, showSnackBar, deleteMessage } = props;
+  const {
+    rows,
+    columns,
+    handleDelete,
+    selectionToDelete,
+    setSelectionToDelete,
+    emptyMessage,
+  } = props;
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const selectionToDelete = React.useRef([]);
   const [deleteDisable, setDeleteDisable] = React.useState(true);
-
-  const handleDelete = () => {
-    const filtedRows = rows.filter(
-      (item) => !selectionToDelete.current.includes(item.id)
-    );
-    setRows(filtedRows);
-    showSnackBar(deleteMessage);
-  };
 
   let density = "standard";
   if (matchesSM) {
@@ -103,17 +104,22 @@ export default function CustomDataGrid(props) {
           checkboxSelection
           disableSelectionOnClick
           onSelectionModelChange={(newSelectionModel) => {
+            // console.log("newSelectionModel", newSelectionModel);
+            // console.log("0 selectionToDelete.current", selectionToDelete);
             if (newSelectionModel.length === 0 && !deleteDisable) {
               setDeleteDisable(true);
             } else if (newSelectionModel.length !== 0 && deleteDisable) {
               setDeleteDisable(false);
             }
-            selectionToDelete.current = newSelectionModel;
+            // selectionToDelete.current = newSelectionModel;
+            setSelectionToDelete(newSelectionModel);
+            // console.log("1 selectionToDelete.current", selectionToDelete);
           }}
-          selectionModel={selectionToDelete.current}
+          // selectionModel={selectionToDelete.current}
+          selectionModel={selectionToDelete}
           components={{
             ColumnMenu: CustomColumnMenuComponent,
-            NoRowsOverlay: CustomNoRowsOverlay,
+            NoRowsOverlay: CustomNoRowsOverlay(emptyMessage),
           }}
         />
       </Grid>
