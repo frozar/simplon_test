@@ -22,12 +22,14 @@ import EditComputer from "../components/EditComputer";
 import Container from "../components/Container";
 import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
+import {
+  retrieveComputerInDB,
+  newComputerInDB,
+  updateComputerInDB,
+  deleteComputerInDB,
+} from "../src/db/ordinateur";
 
-const defaultRows = [
-  { id: 1, nom: "Supercomputer Fugaku" },
-  { id: 2, nom: "Summit" },
-  { id: 3, nom: "Sierra" },
-];
+const defaultRows = [];
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -47,7 +49,19 @@ export default function Ordianteur() {
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
   const computerToEdit = React.useRef(null);
+  const severity = React.useRef("success");
   const notificationMessage = React.useRef("");
+  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
+
+  const updateRowsFromDB = React.useCallback(async () => {
+    const computers = await retrieveComputerInDB();
+    setRows(computers);
+  }, []);
+
+  // Init rows
+  React.useEffect(() => {
+    updateRowsFromDB();
+  }, [updateRowsFromDB]);
 
   const handleOpenCreateComputer = () => setOpenCreateComputer(true);
   const handleCloseCreateComputer = () => setOpenCreateComputer(false);
@@ -55,7 +69,8 @@ export default function Ordianteur() {
   const handleOpenEditComputer = () => setOpenEditComputer(true);
   const handleCloseEditComputer = () => setOpenEditComputer(false);
 
-  const showSnackBar = (notificationMessageArg) => {
+  const showSnackBar = (notificationMessageArg, severityArg = "success") => {
+    severity.current = severityArg;
     notificationMessage.current = notificationMessageArg;
     setOpenSnackBar(true);
   };
@@ -78,13 +93,16 @@ export default function Ordianteur() {
     if (alreadyExist) {
       return ALREADY_EXIST;
     } else {
-      const ids = rows.map((item) => item.id);
-      let newId = 1;
-      while (ids.includes(newId)) {
-        newId += 1;
-      }
-      setRows([...rows, { id: newId, nom: values.nom, prenom: values.prenom }]);
-      showSnackBar("Ordinateur ajouté");
+      const process = async () => {
+        const newComputer = await newComputerInDB(values);
+        if (newComputer !== null) {
+          showSnackBar("Ordinateur ajouté");
+          setRows([...rows, newComputer]);
+        } else {
+          showSnackBar("ERROR: ajout utilisateur", "error");
+        }
+      };
+      process();
       return SUCCESS;
     }
   };
@@ -97,17 +115,32 @@ export default function Ordianteur() {
     if (alreadyExist) {
       return ALREADY_EXIST;
     } else {
-      const mappedRows = rows.map((item) => {
-        if (item.id === id) {
-          return { ...item, nom: values.nom, prenom: values.prenom };
-        } else {
-          return item;
+      const process = async () => {
+        try {
+          await updateComputerInDB(values, id);
+          showSnackBar("Ordinateur modifié");
+          updateRowsFromDB();
+        } catch (e) {
+          console.error("Error modification utilisateur: ", e);
+          showSnackBar("ERROR: modification utilisateur", "error");
         }
-      });
-      setRows(mappedRows);
-      showSnackBar("Ordinateur modifié");
+      };
+      process();
       return SUCCESS;
     }
+  };
+
+  const deleteComputer = () => {
+    const process = async () => {
+      const toWait = [];
+      for (const userId of selectionToDelete) {
+        toWait.push(deleteComputerInDB(userId));
+      }
+      await Promise.all(toWait);
+      showSnackBar("Ordinateur supprimé");
+      updateRowsFromDB();
+    };
+    process();
   };
 
   let columnWidth = 200;
@@ -211,10 +244,11 @@ export default function Ordianteur() {
           </Grid>
           <CustomDataGrid
             rows={rows}
-            setRows={setRows}
             columns={columns}
-            showSnackBar={showSnackBar}
-            deleteMessage="Ordinateur supprimé"
+            handleDelete={deleteComputer}
+            selectionToDelete={selectionToDelete}
+            setSelectionToDelete={setSelectionToDelete}
+            emptyMessage="Pas d'ordinateurs"
           />
         </Grid>
       </Container>
@@ -237,7 +271,11 @@ export default function Ordianteur() {
         TransitionComponent={SlideTransition}
         autoHideDuration={3000}
       >
-        <Alert onClose={hideSnackBar} severity="success" sx={{ width: "100%" }}>
+        <Alert
+          onClose={hideSnackBar}
+          severity={severity.current}
+          sx={{ width: "100%" }}
+        >
           {notificationMessage.current}
         </Alert>
       </Snackbar>

@@ -246,6 +246,7 @@ export default function Utilisateur() {
             handleDelete={deleteUser}
             selectionToDelete={selectionToDelete}
             setSelectionToDelete={setSelectionToDelete}
+            emptyMessage="Pas d'utilisateurs"
           />
         </Grid>
       </Container>

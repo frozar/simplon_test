@@ -51,7 +51,7 @@ export default function Home() {
   const [calendarWidth, setCalendarWidth] = React.useState(null);
 
   React.useEffect(() => {
-    console.dir(headerRef.current.offsetWidth);
+    // console.dir(headerRef.current.offsetWidth);
     setCalendarWidth(headerRef.current.offsetWidth);
   }, [headerRef]);
 

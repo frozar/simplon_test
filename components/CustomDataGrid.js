@@ -42,17 +42,20 @@ function CustomColumnMenuComponent(props) {
   );
 }
 
-function CustomNoRowsOverlay() {
+function CustomNoRowsOverlay(message) {
   const theme = useTheme();
-  return (
-    <GridOverlay
-      style={{
-        background: theme.palette.grey[200],
-      }}
-    >
-      <Typography variant="caption">Pas d&apos;utilisateurs</Typography>
-    </GridOverlay>
-  );
+  // eslint-disable-next-line react/display-name
+  return () => {
+    return (
+      <GridOverlay
+        style={{
+          background: theme.palette.grey[200],
+        }}
+      >
+        <Typography variant="caption">{message}</Typography>
+      </GridOverlay>
+    );
+  };
 }
 
 export default function CustomDataGrid(props) {
@@ -62,6 +65,7 @@ export default function CustomDataGrid(props) {
     handleDelete,
     selectionToDelete,
     setSelectionToDelete,
+    emptyMessage,
   } = props;
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
@@ -115,7 +119,7 @@ export default function CustomDataGrid(props) {
           selectionModel={selectionToDelete}
           components={{
             ColumnMenu: CustomColumnMenuComponent,
-            NoRowsOverlay: CustomNoRowsOverlay,
+            NoRowsOverlay: CustomNoRowsOverlay(emptyMessage),
           }}
         />
       </Grid>
