@@ -1,9 +1,19 @@
-import { retrieveItem, newItem, updateItem, deleteItem } from "./generique";
+import {
+  retrieveItems,
+  retrieveItem,
+  newItem,
+  updateItem,
+  deleteItem,
+} from "./generique";
 
 const COLLECTION_UTILISATEUR = "utilisateur";
 
-export async function retrieveUserInDB() {
-  return retrieveItem(COLLECTION_UTILISATEUR);
+export async function retrieveUsersInDB() {
+  return retrieveItems(COLLECTION_UTILISATEUR);
+}
+
+export async function retrieveUserInDB(id) {
+  return retrieveItem(COLLECTION_UTILISATEUR, id);
 }
 
 export async function newUserInDB(values) {

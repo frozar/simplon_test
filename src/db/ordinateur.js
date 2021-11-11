@@ -1,9 +1,19 @@
-import { retrieveItem, newItem, updateItem, deleteItem } from "./generique";
+import {
+  retrieveItems,
+  retrieveItem,
+  newItem,
+  updateItem,
+  deleteItem,
+} from "./generique";
 
 const COLLECTION_ORDINATEUR = "computer";
 
-export async function retrieveComputerInDB() {
-  return retrieveItem(COLLECTION_ORDINATEUR);
+export async function retrieveComputersInDB() {
+  return retrieveItems(COLLECTION_ORDINATEUR);
+}
+
+export async function retrieveComputerInDB(id) {
+  return retrieveItem(COLLECTION_ORDINATEUR, id);
 }
 
 export async function newComputerInDB(values) {

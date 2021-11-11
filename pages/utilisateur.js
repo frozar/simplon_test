@@ -5,14 +5,12 @@ import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-
 import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
 import MuiAlert from "@mui/material/Alert";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import EditIcon from "@mui/icons-material/Edit";
 
 import Link from "../src/Link";
@@ -22,7 +20,7 @@ import Container from "../components/Container";
 import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 import {
-  retrieveUserInDB,
+  retrieveUsersInDB,
   newUserInDB,
   updateUserInDB,
   deleteUserInDB,
@@ -46,20 +44,26 @@ export default function Utilisateur() {
   const [openCreateUser, setOpenCreateUser] = React.useState(false);
   const [openEditUser, setOpenEditUser] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
 
   const userToEdit = React.useRef(null);
   const severity = React.useRef("success");
   const notificationMessage = React.useRef("");
-  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
 
   const updateRowsFromDB = React.useCallback(async () => {
-    const users = await retrieveUserInDB();
+    const users = await retrieveUsersInDB();
     setRows(users);
   }, []);
 
   // Init rows
   React.useEffect(() => {
-    updateRowsFromDB();
+    const process = async () => {
+      setLoading(true);
+      await updateRowsFromDB();
+      setLoading(false);
+    };
+    process();
   }, [updateRowsFromDB]);
 
   const handleOpenCreateUser = () => setOpenCreateUser(true);
@@ -93,6 +97,7 @@ export default function Utilisateur() {
       return ALREADY_EXIST;
     } else {
       const process = async () => {
+        setLoading(true);
         const newUser = await newUserInDB(values);
         if (newUser !== null) {
           showSnackBar("Utilisateur ajouté");
@@ -100,6 +105,7 @@ export default function Utilisateur() {
         } else {
           showSnackBar("ERROR: ajout utilisateur", "error");
         }
+        setLoading(false);
       };
       process();
       return SUCCESS;
@@ -115,6 +121,7 @@ export default function Utilisateur() {
       return ALREADY_EXIST;
     } else {
       const process = async () => {
+        setLoading(true);
         try {
           await updateUserInDB(values, id);
           showSnackBar("Utilisateur modifié");
@@ -123,23 +130,23 @@ export default function Utilisateur() {
           console.error("Error modification utilisateur: ", e);
           showSnackBar("ERROR: modification utilisateur", "error");
         }
+        setLoading(false);
       };
       process();
       return SUCCESS;
     }
   };
 
-  const deleteUser = () => {
-    const process = async () => {
-      const toWait = [];
-      for (const userId of selectionToDelete) {
-        toWait.push(deleteUserInDB(userId));
-      }
-      await Promise.all(toWait);
-      showSnackBar("Utilisateur supprimé");
-      updateRowsFromDB();
-    };
-    process();
+  const deleteUser = async () => {
+    setLoading(true);
+    const toWait = [];
+    for (const userId of selectionToDelete) {
+      toWait.push(deleteUserInDB(userId));
+    }
+    await Promise.all(toWait);
+    showSnackBar("Utilisateur supprimé");
+    updateRowsFromDB();
+    setLoading(false);
   };
 
   let columnWidth = 150;
@@ -153,8 +160,6 @@ export default function Utilisateur() {
       field: "nom",
       headerName: "Nom",
       width: columnWidth,
-      hide: false,
-      hideSortIcons: true,
     },
     { id: 2, field: "prenom", headerName: "Prénom", width: columnWidth },
     {
@@ -194,7 +199,7 @@ export default function Utilisateur() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Grid item>
+            <Grid item xs={2} sm={3}>
               {matchesSM ? (
                 <Link href="/">
                   <Button variant="contained" color="secondary">
@@ -213,32 +218,12 @@ export default function Utilisateur() {
                 </Link>
               )}
             </Grid>
-            <Grid item>
+            <Grid container item justifyContent="center" xs={8} sm={6}>
               <Typography variant="h6" component="h2" color="primary">
                 Utilisateurs
               </Typography>
             </Grid>
-            <Grid item>
-              {matchesSM ? (
-                <Button
-                  aria-label="add-user"
-                  color="secondary"
-                  onClick={handleOpenCreateUser}
-                >
-                  <PersonAddIcon />
-                </Button>
-              ) : (
-                <Button
-                  aria-label="add-user"
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<PersonAddIcon />}
-                  onClick={handleOpenCreateUser}
-                >
-                  Nouvel utilisateur
-                </Button>
-              )}
-            </Grid>
+            <Grid item xs={2} sm={3} />
           </Grid>
           <CustomDataGrid
             rows={rows}
@@ -247,6 +232,8 @@ export default function Utilisateur() {
             selectionToDelete={selectionToDelete}
             setSelectionToDelete={setSelectionToDelete}
             emptyMessage="Pas d'utilisateurs"
+            handleCreateItem={handleOpenCreateUser}
+            loading={loading}
           />
         </Grid>
       </Container>
