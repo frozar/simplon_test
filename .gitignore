@@ -37,3 +37,9 @@ yarn-error.log*
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Visual Studio Code
+.vscode
+
+# API
+src/serviceAccountKey.json

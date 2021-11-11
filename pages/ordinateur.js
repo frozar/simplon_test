@@ -23,13 +23,15 @@ import Container from "../components/Container";
 import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 import {
-  retrieveComputerInDB,
+  retrieveComputersInDB,
   newComputerInDB,
   updateComputerInDB,
   deleteComputerInDB,
 } from "../src/db/ordinateur";
 
-const defaultRows = [];
+const defaultRows = [
+  // "Supercomputer Fugaku", "Summit", "Sierra"
+];
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -47,20 +49,26 @@ export default function Ordianteur() {
   const [openCreateComputer, setOpenCreateComputer] = React.useState(false);
   const [openEditComputer, setOpenEditComputer] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
 
   const computerToEdit = React.useRef(null);
   const severity = React.useRef("success");
   const notificationMessage = React.useRef("");
-  const [selectionToDelete, setSelectionToDelete] = React.useState([]);
 
   const updateRowsFromDB = React.useCallback(async () => {
-    const computers = await retrieveComputerInDB();
+    const computers = await retrieveComputersInDB();
     setRows(computers);
   }, []);
 
   // Init rows
   React.useEffect(() => {
-    updateRowsFromDB();
+    const process = async () => {
+      setLoading(true);
+      await updateRowsFromDB();
+      setLoading(false);
+    };
+    process();
   }, [updateRowsFromDB]);
 
   const handleOpenCreateComputer = () => setOpenCreateComputer(true);
@@ -94,13 +102,15 @@ export default function Ordianteur() {
       return ALREADY_EXIST;
     } else {
       const process = async () => {
+        setLoading(true);
         const newComputer = await newComputerInDB(values);
         if (newComputer !== null) {
           showSnackBar("Ordinateur ajouté");
           setRows([...rows, newComputer]);
         } else {
-          showSnackBar("ERROR: ajout utilisateur", "error");
+          showSnackBar("ERROR: ajout ordinateur", "error");
         }
+        setLoading(false);
       };
       process();
       return SUCCESS;
@@ -116,31 +126,32 @@ export default function Ordianteur() {
       return ALREADY_EXIST;
     } else {
       const process = async () => {
+        setLoading(true);
         try {
           await updateComputerInDB(values, id);
           showSnackBar("Ordinateur modifié");
           updateRowsFromDB();
         } catch (e) {
-          console.error("Error modification utilisateur: ", e);
-          showSnackBar("ERROR: modification utilisateur", "error");
+          console.error("Error modification ordinateur: ", e);
+          showSnackBar("ERROR: modification ordinateur", "error");
         }
+        setLoading(false);
       };
       process();
       return SUCCESS;
     }
   };
 
-  const deleteComputer = () => {
-    const process = async () => {
-      const toWait = [];
-      for (const userId of selectionToDelete) {
-        toWait.push(deleteComputerInDB(userId));
-      }
-      await Promise.all(toWait);
-      showSnackBar("Ordinateur supprimé");
-      updateRowsFromDB();
-    };
-    process();
+  const deleteComputer = async () => {
+    setLoading(true);
+    const toWait = [];
+    for (const userId of selectionToDelete) {
+      toWait.push(deleteComputerInDB(userId));
+    }
+    await Promise.all(toWait);
+    showSnackBar("Ordinateur supprimé");
+    updateRowsFromDB();
+    setLoading(false);
   };
 
   let columnWidth = 200;
@@ -194,7 +205,7 @@ export default function Ordianteur() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Grid item>
+            <Grid item xs={2} sm={3}>
               {matchesSM ? (
                 <Link href="/">
                   <Button variant="contained" color="secondary">
@@ -213,34 +224,14 @@ export default function Ordianteur() {
                 </Link>
               )}
             </Grid>
-            <Grid item>
+
+            <Grid container item justifyContent="center" xs={8} sm={6}>
               <Typography variant="h6" component="h2" color="primary">
                 Ordinateurs
               </Typography>
             </Grid>
-            <Grid item>
-              {matchesSM ? (
-                <Button
-                  aria-label="add-computer"
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<ComputerIcon />}
-                  onClick={handleOpenCreateComputer}
-                >
-                  +
-                </Button>
-              ) : (
-                <Button
-                  aria-label="add-computer"
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<ComputerIcon />}
-                  onClick={handleOpenCreateComputer}
-                >
-                  Nouvel ordinateur
-                </Button>
-              )}
-            </Grid>
+
+            <Grid item xs={2} sm={3} />
           </Grid>
           <CustomDataGrid
             rows={rows}
@@ -249,6 +240,8 @@ export default function Ordianteur() {
             selectionToDelete={selectionToDelete}
             setSelectionToDelete={setSelectionToDelete}
             emptyMessage="Pas d'ordinateurs"
+            handleCreateItem={handleOpenCreateComputer}
+            loading={loading}
           />
         </Grid>
       </Container>

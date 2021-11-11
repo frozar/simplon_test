@@ -15,6 +15,7 @@ import {
 } from "@mui/x-data-grid";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
 function CustomColumnMenuComponent(props) {
   const { hideMenu, currentColumn, color, ...other } = props;
@@ -66,6 +67,8 @@ export default function CustomDataGrid(props) {
     selectionToDelete,
     setSelectionToDelete,
     emptyMessage,
+    handleCreateItem,
+    ...other
   } = props;
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
@@ -79,14 +82,27 @@ export default function CustomDataGrid(props) {
 
   return (
     <Grid container item spacing={1}>
-      <Grid container item justifyContent="flex-start">
-        <IconButton
-          aria-label="delete"
-          disabled={deleteDisable}
-          onClick={handleDelete}
-        >
-          <DeleteIcon />
-        </IconButton>
+      <Grid container item>
+        <Grid container justifyContent="space-between">
+          <Grid item>
+            <IconButton
+              aria-label="add"
+              onClick={handleCreateItem}
+              color="primary"
+            >
+              <AddIcon />
+            </IconButton>
+          </Grid>
+          <Grid item>
+            <IconButton
+              aria-label="delete"
+              disabled={deleteDisable}
+              onClick={handleDelete}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
       </Grid>
 
       <Grid
@@ -104,23 +120,19 @@ export default function CustomDataGrid(props) {
           checkboxSelection
           disableSelectionOnClick
           onSelectionModelChange={(newSelectionModel) => {
-            // console.log("newSelectionModel", newSelectionModel);
-            // console.log("0 selectionToDelete.current", selectionToDelete);
             if (newSelectionModel.length === 0 && !deleteDisable) {
               setDeleteDisable(true);
             } else if (newSelectionModel.length !== 0 && deleteDisable) {
               setDeleteDisable(false);
             }
-            // selectionToDelete.current = newSelectionModel;
             setSelectionToDelete(newSelectionModel);
-            // console.log("1 selectionToDelete.current", selectionToDelete);
           }}
-          // selectionModel={selectionToDelete.current}
           selectionModel={selectionToDelete}
           components={{
             ColumnMenu: CustomColumnMenuComponent,
             NoRowsOverlay: CustomNoRowsOverlay(emptyMessage),
           }}
+          {...other}
         />
       </Grid>
     </Grid>
