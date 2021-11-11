@@ -1,7 +1,11 @@
 import * as Yup from "yup";
 
 import FormBooking from "./FormBooking";
-import { ALREADY_EXIST } from "../src/constant";
+import {
+  CHRONOLOGICAL_ERROR,
+  USER_INTERSECTION_ERROR,
+  COMPUTER_INTERSECTION_ERROR,
+} from "../src/constant";
 
 export default function CreateBooking(props) {
   const { openModal, handleClose, newBooking } = props;
@@ -20,9 +24,19 @@ export default function CreateBooking(props) {
   });
 
   const onSubmit = async (values, formik) => {
-    const res = await newBooking(values);
-    if (res === ALREADY_EXIST) {
-      const errorMessage = "Cette réservation existe déjà";
+    const bookingCandidate = values;
+    const res = await newBooking(bookingCandidate);
+    if (res === CHRONOLOGICAL_ERROR) {
+      const errorMessage = "La fin de la réservation doit être après le début";
+      console.error(errorMessage);
+      formik.setErrors({ ...formik.errors, global: errorMessage });
+    } else if (res === USER_INTERSECTION_ERROR) {
+      const errorMessage = `${bookingCandidate.utilisateur} a déjà réservé un ordinateur sur cette période`;
+      console.error(errorMessage);
+      formik.setErrors({ ...formik.errors, global: errorMessage });
+    } else if (res === COMPUTER_INTERSECTION_ERROR) {
+      console.log("bookingCandidate.ordinateur", bookingCandidate.ordinateur);
+      const errorMessage = `${bookingCandidate.ordinateur} a déjà été réservé sur cette période`;
       console.error(errorMessage);
       formik.setErrors({ ...formik.errors, global: errorMessage });
     } else {

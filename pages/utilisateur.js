@@ -21,12 +21,16 @@ import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 import {
   retrieveUsersInDB,
+  retrieveUserInDB,
   newUserInDB,
   updateUserInDB,
   deleteUserInDB,
 } from "../src/db/utilisateur";
+import { retrieveBookingsInDB, deleteBookingInDB } from "../src/db/reservation";
 
-const defaultRows = [];
+const defaultRows = [
+  // "Wissart Lolita", "Deniset Armand", "Rozar Fabien"
+];
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -139,7 +143,31 @@ export default function Utilisateur() {
 
   const deleteUser = async () => {
     setLoading(true);
+    // Cascade on delete relation between utilisateur and reservation
     const toWait = [];
+    for (const userId of selectionToDelete) {
+      toWait.push(retrieveUserInDB(userId));
+    }
+    await Promise.all(toWait);
+    const usersToDelete = [];
+    for (const wkUser of toWait) {
+      const user = await wkUser;
+      usersToDelete.push(user);
+    }
+    const userFullName = usersToDelete.map((u) => `${u.nom} ${u.prenom}`);
+
+    const bookings = await retrieveBookingsInDB();
+    const bookingsToDelete = bookings.filter((b) =>
+      userFullName.includes(b.utilisateur)
+    );
+
+    toWait.length = 0;
+    for (const { id: bookingId } of bookingsToDelete) {
+      toWait.push(deleteBookingInDB(bookingId));
+    }
+    await Promise.all(toWait);
+
+    toWait.length = 0;
     for (const userId of selectionToDelete) {
       toWait.push(deleteUserInDB(userId));
     }

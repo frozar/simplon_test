@@ -170,6 +170,7 @@ function LocalizedDateTimePicker(props) {
         // type="text"
         // value={value}
         // onChange={onChangeArg}
+        minutesStep={5}
         renderInput={(params) => {
           // console.log("params", params);
           return (

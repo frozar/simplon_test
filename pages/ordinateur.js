@@ -24,10 +24,12 @@ import CustomDataGrid from "../components/CustomDataGrid";
 import { SUCCESS, ALREADY_EXIST } from "../src/constant";
 import {
   retrieveComputersInDB,
+  retrieveComputerInDB,
   newComputerInDB,
   updateComputerInDB,
   deleteComputerInDB,
 } from "../src/db/ordinateur";
+import { retrieveBookingsInDB, deleteBookingInDB } from "../src/db/reservation";
 
 const defaultRows = [
   // "Supercomputer Fugaku", "Summit", "Sierra"
@@ -144,9 +146,33 @@ export default function Ordianteur() {
 
   const deleteComputer = async () => {
     setLoading(true);
+    // Cascade on delete relation between computer and reservation
     const toWait = [];
-    for (const userId of selectionToDelete) {
-      toWait.push(deleteComputerInDB(userId));
+    for (const computerId of selectionToDelete) {
+      toWait.push(retrieveComputerInDB(computerId));
+    }
+    await Promise.all(toWait);
+    const computersToDelete = [];
+    for (const wkComputer of toWait) {
+      const computer = await wkComputer;
+      computersToDelete.push(computer);
+    }
+    const computersName = computersToDelete.map((c) => `${c.nom}`);
+
+    const bookings = await retrieveBookingsInDB();
+    const bookingsToDelete = bookings.filter((b) =>
+      computersName.includes(b.ordinateur)
+    );
+
+    toWait.length = 0;
+    for (const { id: bookingId } of bookingsToDelete) {
+      toWait.push(deleteBookingInDB(bookingId));
+    }
+    await Promise.all(toWait);
+
+    toWait.length = 0;
+    for (const computerId of selectionToDelete) {
+      toWait.push(deleteComputerInDB(computerId));
     }
     await Promise.all(toWait);
     showSnackBar("Ordinateur supprimé");
