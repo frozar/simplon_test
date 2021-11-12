@@ -384,7 +384,7 @@ export default function Home() {
       const newBooking = await newBookingInDB(bookingCandidate);
       if (newBooking !== null) {
         showSnackBar("Réservation ajouté");
-        updateRowsFromDB();
+        await updateRowsFromDB();
       } else {
         showSnackBar("ERROR: ajout réservation", "error");
       }
@@ -411,7 +411,7 @@ export default function Home() {
       try {
         await updateBookingInDB(booking, id);
         showSnackBar("Réservation modifiée");
-        updateRowsFromDB();
+        await updateRowsFromDB();
       } catch (e) {
         console.error("Error modification réservation: ", e);
         showSnackBar("ERROR: modification réservation", "error");
@@ -423,13 +423,15 @@ export default function Home() {
   };
 
   const deleteBooking = async () => {
+    setLoading(true);
     const toWait = [];
     for (const bookingId of selectionToDelete) {
       toWait.push(deleteBookingInDB(bookingId));
     }
     await Promise.all(toWait);
     showSnackBar("Réservation supprimé");
-    updateRowsFromDB();
+    await updateRowsFromDB();
+    setLoading(false);
   };
 
   const dataGridDisplay = true;

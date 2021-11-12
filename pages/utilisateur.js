@@ -129,7 +129,7 @@ export default function Utilisateur() {
         try {
           await updateUserInDB(values, id);
           showSnackBar("Utilisateur modifié");
-          updateRowsFromDB();
+          await updateRowsFromDB();
         } catch (e) {
           console.error("Error modification utilisateur: ", e);
           showSnackBar("ERROR: modification utilisateur", "error");
@@ -173,7 +173,7 @@ export default function Utilisateur() {
     }
     await Promise.all(toWait);
     showSnackBar("Utilisateur supprimé");
-    updateRowsFromDB();
+    await updateRowsFromDB();
     setLoading(false);
   };
 

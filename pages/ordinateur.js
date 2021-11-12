@@ -29,7 +29,11 @@ import {
   updateComputerInDB,
   deleteComputerInDB,
 } from "../src/db/ordinateur";
-import { retrieveBookingsInDB, deleteBookingInDB } from "../src/db/reservation";
+import {
+  retrieveBookingsInDB,
+  deleteBookingInDB,
+  updateBookingInDB,
+} from "../src/db/reservation";
 
 const defaultRows = [
   // "Supercomputer Fugaku", "Summit", "Sierra"
@@ -119,20 +123,38 @@ export default function Ordianteur() {
     }
   };
 
-  const editComputer = (values, id) => {
+  const editComputer = (computeCandidate, id) => {
     const alreadyExist =
-      rows.filter(
-        (item) => item.nom === values.nom && item.prenom === values.prenom
-      ).length !== 0;
+      rows.filter((item) => item.nom === computeCandidate.nom).length !== 0;
     if (alreadyExist) {
       return ALREADY_EXIST;
     } else {
       const process = async () => {
         setLoading(true);
         try {
-          await updateComputerInDB(values, id);
+          const { nom: computerName } = await retrieveComputerInDB(id);
+
+          // Modify the existing booking to match with the new computer name
+          const bookings = await retrieveBookingsInDB();
+          const bookingsToModify = bookings.filter(
+            (b) => b.ordinateur === computerName
+          );
+
+          const modifiedBookings = bookingsToModify.map((b) => ({
+            ...b,
+            ordinateur: computeCandidate.nom,
+          }));
+
+          const toWait = [];
+          for (const b of modifiedBookings) {
+            const { id, ...values } = b;
+            toWait.push(updateBookingInDB(values, b.id));
+          }
+          await Promise.all(toWait);
+
+          await updateComputerInDB(computeCandidate, id);
           showSnackBar("Ordinateur modifié");
-          updateRowsFromDB();
+          await updateRowsFromDB();
         } catch (e) {
           console.error("Error modification ordinateur: ", e);
           showSnackBar("ERROR: modification ordinateur", "error");
@@ -176,7 +198,7 @@ export default function Ordianteur() {
     }
     await Promise.all(toWait);
     showSnackBar("Ordinateur supprimé");
-    updateRowsFromDB();
+    await updateRowsFromDB();
     setLoading(false);
   };
 

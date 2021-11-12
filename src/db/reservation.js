@@ -21,8 +21,6 @@ export async function newBookingInDB(values) {
 }
 
 export async function updateBookingInDB(values, id) {
-  // console.log("updateBookingInDB values", values);
-  // console.log("updateBookingInDB id", id);
   return updateItem(COLLECTION_RESERVATION, values, id);
 }
 
