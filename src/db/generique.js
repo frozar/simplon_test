@@ -60,8 +60,6 @@ export async function newItem(collectionArg, values) {
 export async function updateItem(collectionArg, values, id) {
   const docRef = doc(db, collectionArg, id);
 
-  // console.log("updateItem id", id);
-  // console.log("updateItem values", values);
   await updateDoc(docRef, {
     ...values,
   });
@@ -69,7 +67,7 @@ export async function updateItem(collectionArg, values, id) {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
+    // console.log("Document data:", docSnap.data());
   } else {
     console.log("No such document!");
   }
