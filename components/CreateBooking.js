@@ -1,5 +1,7 @@
 import * as Yup from "yup";
 
+import moment from "moment";
+
 import FormBooking from "./FormBooking";
 import {
   CHRONOLOGICAL_ERROR,
@@ -7,14 +9,28 @@ import {
   COMPUTER_INTERSECTION_ERROR,
 } from "../src/constant";
 
+const computeRoundDate = (moment) => {
+  const date = moment.toDate();
+  let min = date.getMinutes();
+  min = Math.floor(min / 5) * 5;
+  date.setMinutes(min);
+  date.setSeconds(0, 0);
+  return date;
+};
+
 export default function CreateBooking(props) {
   const { openModal, handleClose, newBooking } = props;
+
+  const momentDebut = moment().add(5, "minute");
+  const dateDebut = computeRoundDate(momentDebut);
+  const momentFin = moment().add(35, "minute");
+  const dateFin = computeRoundDate(momentFin);
 
   const initialValues = {
     utilisateur: "",
     ordinateur: "",
-    debut: new Date(),
-    fin: new Date(),
+    debut: dateDebut,
+    fin: dateFin,
   };
   const validationSchema = Yup.object({
     utilisateur: Yup.string().required("Utilisateur ?"),
