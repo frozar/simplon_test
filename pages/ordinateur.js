@@ -134,7 +134,7 @@ export default function Ordianteur() {
         try {
           const { nom: computerName } = await retrieveComputerInDB(id);
 
-          // Modify the existing booking to match with the new computer name
+          // Modify the existing booking to match with the new ordinateur name
           const bookings = await retrieveBookingsInDB();
           const bookingsToModify = bookings.filter(
             (b) => b.ordinateur === computerName

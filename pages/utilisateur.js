@@ -26,7 +26,11 @@ import {
   updateUserInDB,
   deleteUserInDB,
 } from "../src/db/utilisateur";
-import { retrieveBookingsInDB, deleteBookingInDB } from "../src/db/reservation";
+import {
+  retrieveBookingsInDB,
+  deleteBookingInDB,
+  updateBookingInDB,
+} from "../src/db/reservation";
 
 const defaultRows = [
   // "Wissart Lolita", "Deniset Armand", "Rozar Fabien"
@@ -116,10 +120,11 @@ export default function Utilisateur() {
     }
   };
 
-  const editUser = (values, id) => {
+  const editUser = (userCandidate, id) => {
     const alreadyExist =
       rows.filter(
-        (item) => item.nom === values.nom && item.prenom === values.prenom
+        (item) =>
+          item.nom === userCandidate.nom && item.prenom === userCandidate.prenom
       ).length !== 0;
     if (alreadyExist) {
       return ALREADY_EXIST;
@@ -127,7 +132,28 @@ export default function Utilisateur() {
       const process = async () => {
         setLoading(true);
         try {
-          await updateUserInDB(values, id);
+          const { nom, prenom } = await retrieveUserInDB(id);
+          const userFullName = `${nom} ${prenom}`;
+
+          // Modify the existing booking to match with the new utilisateur name
+          const bookings = await retrieveBookingsInDB();
+          const bookingsToModify = bookings.filter(
+            (b) => b.utilisateur === userFullName
+          );
+
+          const modifiedBookings = bookingsToModify.map((b) => ({
+            ...b,
+            utilisateur: `${userCandidate.nom} ${userCandidate.prenom}`,
+          }));
+
+          const toWait = [];
+          for (const b of modifiedBookings) {
+            const { id, ...values } = b;
+            toWait.push(updateBookingInDB(values, b.id));
+          }
+          await Promise.all(toWait);
+
+          await updateUserInDB(userCandidate, id);
           showSnackBar("Utilisateur modifié");
           await updateRowsFromDB();
         } catch (e) {
