@@ -1,54 +1,17 @@
 import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
 
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { Formik, Form, Field } from "formik";
 
 export default function FormUser(props) {
-  const {
-    title,
-    // openModal,
-    // handleClose,
-    initialValues,
-    validationSchema,
-    onSubmit,
-  } = props;
-  // const theme = useTheme();
-  // const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
-
-  // let boxWidth = "60%";
-  // if (matchesSM) {
-  //   boxWidth = "90%";
-  // }
-
-  // const styleModal = {
-  //   position: "absolute",
-  //   left: "50%",
-  //   top: "20%",
-  //   transform: "translate(-50%, 0%)",
-  //   bgcolor: "background.paper",
-  //   borderRadius: "20px",
-  //   boxShadow: 24,
-  //   p: 2,
-  //   width: boxWidth,
-  // };
+  const { title, initialValues, validationSchema, onSubmit } = props;
 
   return (
-    // <Modal
-    //   open={openModal}
-    //   onClose={handleClose}
-    //   aria-labelledby="form-user-popup"
-    //   aria-describedby="form-user-popup"
-    // >
-    // <Box sx={styleModal}>
     <Grid
       container
       justifyContent="center"
@@ -168,7 +131,5 @@ export default function FormUser(props) {
         }}
       </Formik>
     </Grid>
-    // </Box>
-    // </Modal>
   );
 }
