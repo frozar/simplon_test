@@ -12,10 +12,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { Formik, Form, Field } from "formik";
 
-function AutofocusTextField(props) {
-  return <TextField {...props} autoFocus />;
-}
-
 export default function FormUser(props) {
   const {
     title,
@@ -87,7 +83,7 @@ export default function FormUser(props) {
                       id="login"
                       label="Login"
                       type="text"
-                      component={AutofocusTextField}
+                      component={TextField}
                       variant="outlined"
                       required
                       value={formik.values.login}
