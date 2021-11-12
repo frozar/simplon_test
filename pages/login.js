@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import * as Yup from "yup";
 
@@ -45,13 +46,23 @@ function Login() {
   });
 
   return (
-    <Container>
-      <FormLogin
-        title="Login"
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      />
-    </Container>
+    <>
+      <Head>
+        <title>RéservAli | Login</title>
+        <meta
+          name="description"
+          content="Application de réservation d'ordinateur"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Container>
+        <FormLogin
+          title="Login"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        />
+      </Container>
+    </>
   );
 }

@@ -24,8 +24,6 @@ import Calendar from "../components/Calendar";
 import CustomDataGrid from "../components/CustomDataGrid";
 import CreateBooking from "../components/CreateBooking";
 import EditBooking from "../components/EditBooking";
-import { retrieveUserInDB } from "../src/db/utilisateur";
-import { retrieveComputerInDB } from "../src/db/ordinateur";
 import {
   retrieveBookingsInDB,
   newBookingInDB,
@@ -84,9 +82,6 @@ const defaultRows = [
   //   fin: moment().add(1, "hour"),
   // },
 ];
-
-// const usersCache = {};
-// const computersCache = {};
 
 const computeBookingIntersection = (existingBookings, debutTime, finTime) => {
   const hasBookingIntersection = false;
@@ -224,50 +219,6 @@ export default function Home() {
       setCalendarWidth(headerRef.current.offsetWidth);
     }, 0);
   }, [headerRef]);
-
-  // const resolveItems = async (ids, retrieveFunc, cache) => {
-  //   const items = {};
-  //   for (const id of ids) {
-  //     if (cache[id] !== undefined) {
-  //       items[id] = cache[id];
-  //     } else {
-  //       items[id] = await retrieveFunc(id);
-  //     }
-  //   }
-  //   return items;
-  // };
-
-  // const processRows = React.useCallback(async (rowsArg) => {
-  //   const userIds = rowsArg.map((item) => item.utilisateur);
-  //   const computerIds = rowsArg.map((item) => item.ordinateur);
-  //   const users = await resolveItems(userIds, retrieveUserInDB, usersCache);
-  //   const computers = await resolveItems(
-  //     computerIds,
-  //     retrieveComputerInDB,
-  //     computersCache
-  //   );
-
-  //   const processedRows = rowsArg.map((item) => {
-  //     const user = users[item.utilisateur];
-  //     const userFullName = `${user.nom} ${user.prenom}`;
-  //     return {
-  //       ...item,
-  //       utilisateur: userFullName,
-  //       ordinateur: computers[item.ordinateur].nom,
-  //     };
-  //   });
-  //   setRenderRows(processedRows);
-  // }, []);
-
-  // // Update renderRows
-  // React.useEffect(() => {
-  //   const process = async () => {
-  //     setLoading(true);
-  //     await processRows(rows);
-  //     setLoading(false);
-  //   };
-  //   process();
-  // }, [rows, processRows]);
 
   let columnWidth = 180;
   if (matchesSM) {
