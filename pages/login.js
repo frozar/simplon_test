@@ -57,7 +57,7 @@ function Login() {
       </Head>
       <Container>
         <FormLogin
-          title="Login"
+          title="Connexion"
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={onSubmit}
