@@ -7,6 +7,7 @@ specifiers:
   '@emotion/react': ^11.5.0
   '@emotion/server': ^11.4.0
   '@emotion/styled': ^11.3.0
+  '@hookform/resolvers': ^2.8.3
   '@mui/icons-material': ^5.0.5
   '@mui/lab': ^5.0.0-alpha.54
   '@mui/material': ^5.0.6
@@ -24,6 +25,8 @@ specifiers:
   react: 17.0.2
   react-calendar-timeline: ^0.27.0
   react-dom: 17.0.2
+  react-hook-form: ^7.19.5
+  rxjs: ^7.4.0
   yup: ^0.32.11
 
 dependencies:
@@ -33,6 +36,7 @@ dependencies:
   '@emotion/react': 11.5.0_react@17.0.2
   '@emotion/server': 11.4.0
   '@emotion/styled': 11.3.0_f400783037ccf00f9cadfddbfc36c9d5
+  '@hookform/resolvers': 2.8.3_react-hook-form@7.19.5
   '@mui/icons-material': 5.0.5_@mui+material@5.0.6+react@17.0.2
   '@mui/lab': 5.0.0-alpha.54_67ba38854d17bd7db5e6ba9d5ddef999
   '@mui/material': 5.0.6_a0e5aa09008c2d42a228aa7968c12559
@@ -48,6 +52,8 @@ dependencies:
   react: 17.0.2
   react-calendar-timeline: 0.27.0_fd256c177fbecdc78fb59e05fdd14506
   react-dom: 17.0.2_react@17.0.2
+  react-hook-form: 7.19.5_react@17.0.2
+  rxjs: 7.4.0
   yup: 0.32.11
 
 devDependencies:
@@ -798,6 +804,14 @@ packages:
 
   /@hapi/hoek/9.2.1:
     resolution: {integrity: sha512-gfta+H8aziZsm8pZa0vj04KO6biEiisppNgA1kbJvFrrWu9Vm7eaUEy76DIxsuTaWvti5fkJVhllWc6ZTE+Mdw==}
+    dev: false
+
+  /@hookform/resolvers/2.8.3_react-hook-form@7.19.5:
+    resolution: {integrity: sha512-9G6/vCUNvg3O4MeAK4l749syOz/2r1DF/Pq3Njuk3sI4ObHoRyV0nxio5NrNLGC+7N1Ixu9vJ/loNhaUNXTX6A==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.19.5_react@17.0.2
     dev: false
 
   /@humanwhocodes/config-array/0.5.0:
@@ -3874,6 +3888,14 @@ packages:
     resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
     dev: false
 
+  /react-hook-form/7.19.5_react@17.0.2:
+    resolution: {integrity: sha512-+M9gd0nWWASuEitf5PQGOGNElnHknzY3rGISrPDXwsOmZb7c/jyvkRUqk4OJXaZit1ZwesSv+EysttdAeFEfmw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17
+    dependencies:
+      react: 17.0.2
+    dev: false
+
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -4027,6 +4049,12 @@ packages:
     dependencies:
       queue-microtask: 1.2.3
     dev: true
+
+  /rxjs/7.4.0:
+    resolution: {integrity: sha512-7SQDi7xeTMCJpqViXh8gL/lebcwlp3d831F05+9B44A4B0WfsEwUQHR64gsH1kvJ+Ep/J9K2+n1hVl1CsGN23w==}
+    dependencies:
+      tslib: 2.1.0
+    dev: false
 
   /safe-buffer/5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -4418,6 +4446,10 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
+
+  /tslib/2.1.0:
+    resolution: {integrity: sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==}
+    dev: false
 
   /tslib/2.3.1:
     resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
