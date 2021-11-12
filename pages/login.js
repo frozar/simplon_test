@@ -1,86 +1,57 @@
-import React from "react";
-import Head from "next/head";
-import { useTheme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import * as Yup from "yup";
 
-import MuiAlert from "@mui/material/Alert";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { userService } from "services";
 
+import FormLogin from "../components/FormLogin";
 import Container from "../components/Container";
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+export default Login;
 
-export default function Ordianteur() {
-  const theme = useTheme();
-  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
+function Login() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // redirect to home if already logged in
+    if (userService.userValue) {
+      router.push("/");
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function onSubmit({ login: username, password }, formik) {
+    return userService
+      .login(username, password)
+      .then(() => {
+        // get return url from query parameters or default to '/'
+        const returnUrl = router.query.returnUrl || "/";
+        router.push(returnUrl);
+      })
+      .catch((error) => {
+        console.error(error);
+        formik.setErrors({ ...formik.errors, global: error });
+      });
+  }
+
+  const initialValues = {
+    login: "",
+    password: "",
+  };
+  const validationSchema = Yup.object({
+    login: Yup.string().required("Login ?"),
+    password: Yup.string().required("Password ?"),
+  });
 
   return (
-    <>
-      <Head>
-        <title>RéservAli | Login</title>
-        <meta
-          name="description"
-          content="Application de réservation d'ordinateur"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <Container>
-        <Grid container direction="column" spacing={1}>
-          <Grid container item justifyContent="center" alignItems="center">
-            {/* <Grid item>
-              {matchesSM ? (
-                <Link href="/">
-                  <Button variant="contained" color="secondary">
-                    <ArrowBackIosIcon fontSize="small" />
-                  </Button>
-                </Link>
-              ) : (
-                <Link href="/">
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<ArrowBackIosIcon fontSize="large" />}
-                  >
-                    Accueil
-                  </Button>
-                </Link>
-              )}
-            </Grid> */}
-            <Grid item>
-              <Typography variant="h6" component="h2" color="primary">
-                Login
-              </Typography>
-            </Grid>
-            {/* <Grid item>
-              {matchesSM ? (
-                <Button
-                  aria-label="add-computer"
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<ComputerIcon />}
-                  onClick={handleOpenCreateComputer}
-                >
-                  +
-                </Button>
-              ) : (
-                <Button
-                  aria-label="add-computer"
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<ComputerIcon />}
-                  onClick={handleOpenCreateComputer}
-                >
-                  Nouvel ordinateur
-                </Button>
-              )}
-            </Grid> */}
-          </Grid>
-        </Grid>
-      </Container>
-    </>
+    <Container>
+      <FormLogin
+        title="Login"
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      />
+    </Container>
   );
 }

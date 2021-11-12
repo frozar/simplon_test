@@ -17,6 +17,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ComputerIcon from "@mui/icons-material/Computer";
 
 import moment from "moment";
+import { userService } from "services";
 
 import Container from "../components/Container";
 import Calendar from "../components/Calendar";
@@ -194,6 +195,10 @@ export default function Home() {
     const { row: booking } = params;
     bookingToEdit.current = booking;
     handleOpenEditBooking();
+  };
+
+  const handleLogout = () => {
+    return userService.logout();
   };
 
   const updateRowsFromDB = React.useCallback(async () => {
@@ -511,7 +516,11 @@ export default function Home() {
             <Grid item>
               <Link href="/login">
                 {matchesSM ? (
-                  <Button variant="contained" color="secondary">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleLogout}
+                  >
                     <LogoutIcon />
                   </Button>
                 ) : (
@@ -519,6 +528,7 @@ export default function Home() {
                     variant="contained"
                     color="secondary"
                     startIcon={<LogoutIcon fontSize="large" />}
+                    onClick={handleLogout}
                   >
                     Logout
                   </Button>
